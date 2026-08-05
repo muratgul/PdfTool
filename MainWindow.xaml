@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PdfTool"
         mc:Ignorable="d"
-        Title="YolbulanPDF - Modern PDF Araç Kutusu" 
+        Title="MEGPdf - Modern PDF Araç Kutusu" 
         Height="800" Width="1000"
         MinHeight="850" MinWidth="950"
         WindowStartupLocation="CenterScreen"
@@ -203,7 +203,7 @@
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Path Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V7h2v2zm6 12H12v-2h4v2zm0-4H12v-2h4v2zm0-4H12V7h4v2z" 
                           Fill="{StaticResource PrimaryBrush}" Width="26" Height="26" Stretch="Uniform" Margin="0,0,10,0"/>
-                    <TextBlock Text="YolbulanPDF" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextLight}" VerticalAlignment="Center"/>
+                    <TextBlock Text="MEGPdf" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextLight}" VerticalAlignment="Center"/>
                 </StackPanel>
 
                 <!-- Navigation List -->
@@ -272,11 +272,43 @@
                                 </DataTemplate>
                             </RadioButton.ContentTemplate>
                         </RadioButton>
+
+                        <RadioButton x:Name="BtnNavCompress" Content="PDF Sıkıştır" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                            <RadioButton.ContentTemplate>
+                                <DataTemplate>
+                                    <Path Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9h-4v2h4v-2zm4-4h-8v2h8V8z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
+                                </DataTemplate>
+                            </RadioButton.ContentTemplate>
+                        </RadioButton>
+
+                        <RadioButton x:Name="BtnNavProtect" Content="Şifrele/Çöz" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                            <RadioButton.ContentTemplate>
+                                <DataTemplate>
+                                    <Path Data="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
+                                </DataTemplate>
+                            </RadioButton.ContentTemplate>
+                        </RadioButton>
+
+                        <RadioButton x:Name="BtnNavPageNumber" Content="Sayfa Numarası" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                            <RadioButton.ContentTemplate>
+                                <DataTemplate>
+                                    <Path Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-4-4h3v-4h2v4h3l-4 4zm4-9V6l-4 4h-3v4h-2V6L5 8V6l4-4h2v4h3l4-4v2z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
+                                </DataTemplate>
+                            </RadioButton.ContentTemplate>
+                        </RadioButton>
+
+                        <RadioButton x:Name="BtnNavExtractText" Content="Metin Çıkar" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                            <RadioButton.ContentTemplate>
+                                <DataTemplate>
+                                    <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
+                                </DataTemplate>
+                            </RadioButton.ContentTemplate>
+                        </RadioButton>
                     </StackPanel>
                 </ScrollViewer>
 
                 <!-- Footer / Info -->
-                <TextBlock Grid.Row="2" Text="YolbulanPDF v1.0 • Modern PDF" FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Row="2" Text="MEGPdf v1.0 • Modern PDF" FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Grid>
         </Border>
 
@@ -304,7 +336,7 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.Row="0" Margin="0,0,0,24">
-                            <TextBlock Text="YolbulanPDF Araç Kutusu'na Hoş Geldiniz" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
+                            <TextBlock Text="MEGPdf Araç Kutusu'na Hoş Geldiniz" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
                             <TextBlock Text="PDF dosyalarınız üzerinde hızlı ve güvenli işlemler gerçekleştirin." FontSize="14" Foreground="{StaticResource TextGray}" Margin="0,4,0,0"/>
                         </StackPanel>
 
@@ -975,6 +1007,124 @@
                         </Border>
                     </Grid>
                 </TabItem>
+            
+                <!-- ================= NEW FEATURE TABS ================= -->
+                <!-- Compress Tab -->
+                <TabItem Header="Compress">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                            <TextBlock Text="PDF Sıkıştırma" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
+                            <TextBlock Text="PDF dosyanızın boyutunu optimize edin." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                        </StackPanel>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="320"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="CompressDrop">
+                                <StackPanel VerticalAlignment="Center">
+                                    <Button Content="PDF Seçin" Style="{StaticResource ModernButtonStyle}" Click="BtnSelectCompressFile_Click" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="TxtCompressFileName" Text="Dosya seçilmedi" Foreground="{StaticResource TextGray}" Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Padding="20">
+                                <StackPanel>
+                                    <TextBlock Text="Ayarlar" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" Margin="0,0,0,16"/>
+                                    <Button x:Name="BtnCompressAction" Content="Sıkıştır ve Kaydet" Style="{StaticResource ModernButtonStyle}" Click="BtnCompressAction_Click" IsEnabled="False"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+
+                <!-- Protect Tab -->
+                <TabItem Header="Protect">
+                    <Grid>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                            <TextBlock Text="Şifrele / Çöz" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
+                            <TextBlock Text="PDF dosyasına parola koyun veya kaldırın." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                        </StackPanel>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="320"/></Grid.ColumnDefinitions>
+                            <Border Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="ProtectDrop">
+                                <StackPanel VerticalAlignment="Center">
+                                    <Button Content="PDF Seçin" Style="{StaticResource ModernButtonStyle}" Click="BtnSelectProtectFile_Click" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="TxtProtectFileName" Text="Dosya seçilmedi" Foreground="{StaticResource TextGray}" Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Padding="20">
+                                <StackPanel>
+                                    <TextBlock Text="İşlem Türü" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <ComboBox x:Name="CmbProtectAction" SelectedIndex="0" Margin="0,0,0,12">
+                                        <ComboBoxItem Content="Şifre Ekle"/>
+                                        <ComboBoxItem Content="Şifre Kaldır"/>
+                                    </ComboBox>
+                                    <TextBlock Text="Şifre (Açılış/Sahip)" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <TextBox x:Name="TxtProtectPassword" Style="{StaticResource ModernTextBoxStyle}" Margin="0,0,0,24"/>
+                                    <Button x:Name="BtnProtectAction" Content="Uygula ve Kaydet" Style="{StaticResource ModernButtonStyle}" Click="BtnProtectAction_Click" IsEnabled="False"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+
+                <!-- Page Number Tab -->
+                <TabItem Header="PageNumber">
+                    <Grid>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                            <TextBlock Text="Sayfa Numarası Ekle" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
+                            <TextBlock Text="PDF sayfalarının alt kısmına sayfa numarası ekleyin." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                        </StackPanel>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="320"/></Grid.ColumnDefinitions>
+                            <Border Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="PageNumberDrop">
+                                <StackPanel VerticalAlignment="Center">
+                                    <Button Content="PDF Seçin" Style="{StaticResource ModernButtonStyle}" Click="BtnSelectPageNumberFile_Click" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="TxtPageNumberFileName" Text="Dosya seçilmedi" Foreground="{StaticResource TextGray}" Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Padding="20">
+                                <StackPanel>
+                                    <TextBlock Text="Format" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <TextBox x:Name="TxtPageNumberFormat" Style="{StaticResource ModernTextBoxStyle}" Text="Sayfa {0} / {1}" Margin="0,0,0,24"/>
+                                    <Button x:Name="BtnPageNumberAction" Content="Numara Ekle ve Kaydet" Style="{StaticResource ModernButtonStyle}" Click="BtnPageNumberAction_Click" IsEnabled="False"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+
+                <!-- Extract Text Tab -->
+                <TabItem Header="ExtractText">
+                    <Grid>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                            <TextBlock Text="Metin Çıkarma" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
+                            <TextBlock Text="PDF içerisindeki tüm metni bir TXT dosyasına aktarın." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                        </StackPanel>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="320"/></Grid.ColumnDefinitions>
+                            <Border Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="ExtractTextDrop">
+                                <StackPanel VerticalAlignment="Center">
+                                    <Button Content="PDF Seçin" Style="{StaticResource ModernButtonStyle}" Click="BtnSelectExtractTextFile_Click" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="TxtExtractTextFileName" Text="Dosya seçilmedi" Foreground="{StaticResource TextGray}" Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Padding="20">
+                                <StackPanel>
+                                    <Button x:Name="BtnExtractTextAction" Content="Metni Çıkar (.txt)" Style="{StaticResource ModernButtonStyle}" Click="BtnExtractTextAction_Click" IsEnabled="False"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+
             </TabControl>
 
             <!-- Global Success / Error Toast Message Bar -->

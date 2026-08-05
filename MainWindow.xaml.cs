@@ -87,6 +87,10 @@ namespace PdfTool
             else if (sender == BtnNavWatermark) MainTabControl.SelectedIndex = 5;
             else if (sender == BtnNavToImage) MainTabControl.SelectedIndex = 6;
             else if (sender == BtnNavToPdf) MainTabControl.SelectedIndex = 7;
+            else if (sender == BtnNavCompress) MainTabControl.SelectedIndex = 8;
+            else if (sender == BtnNavProtect) MainTabControl.SelectedIndex = 9;
+            else if (sender == BtnNavPageNumber) MainTabControl.SelectedIndex = 10;
+            else if (sender == BtnNavExtractText) MainTabControl.SelectedIndex = 11;
         }
 
         private void CardMerge_Click(object sender, RoutedEventArgs e) => BtnNavMerge.IsChecked = true;
@@ -1400,6 +1404,153 @@ namespace PdfTool
             }
         }
 
+        #region New Features Logic
+
+        // --- COMPRESS ---
+        private string _loadedCompressFile;
+        private void BtnSelectCompressFile_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new OpenFileDialog { Filter = "PDF Belgeleri (*.pdf)|*.pdf" };
+            if (dlg.ShowDialog() == true) LoadCompressFile(dlg.FileName);
+        }
+        private void CompressDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files != null && files.Length > 0 && Path.GetExtension(files[0]).ToLower() == ".pdf")
+                    LoadCompressFile(files[0]);
+            }
+        }
+        private void LoadCompressFile(string path)
+        {
+            _loadedCompressFile = path;
+            TxtCompressFileName.Text = Path.GetFileName(path);
+            BtnCompressAction.IsEnabled = true;
+        }
+        private void BtnCompressAction_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new SaveFileDialog { Filter = "PDF (*.pdf)|*.pdf", FileName = "sikistirilmis.pdf" };
+            if (dlg.ShowDialog() == true)
+            {
+                try {
+                    PdfTool.Services.PdfServiceExtensions.CompressPdf(_loadedCompressFile, dlg.FileName);
+                    ShowToast("PDF başarıyla sıkıştırıldı.");
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(dlg.FileName) { UseShellExecute = true });
+                } catch (Exception ex) { ShowToast($"Hata: {ex.Message}", false); }
+            }
+        }
+
+        // --- PROTECT ---
+        private string _loadedProtectFile;
+        private void BtnSelectProtectFile_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new OpenFileDialog { Filter = "PDF Belgeleri (*.pdf)|*.pdf" };
+            if (dlg.ShowDialog() == true) LoadProtectFile(dlg.FileName);
+        }
+        private void ProtectDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files != null && files.Length > 0 && Path.GetExtension(files[0]).ToLower() == ".pdf")
+                    LoadProtectFile(files[0]);
+            }
+        }
+        private void LoadProtectFile(string path)
+        {
+            _loadedProtectFile = path;
+            TxtProtectFileName.Text = Path.GetFileName(path);
+            BtnProtectAction.IsEnabled = true;
+        }
+        private void BtnProtectAction_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new SaveFileDialog { Filter = "PDF (*.pdf)|*.pdf", FileName = "islem_gormus.pdf" };
+            if (dlg.ShowDialog() == true)
+            {
+                try {
+                    if (CmbProtectAction.SelectedIndex == 0)
+                        PdfTool.Services.PdfServiceExtensions.ProtectPdf(_loadedProtectFile, dlg.FileName, TxtProtectPassword.Text, TxtProtectPassword.Text);
+                    else
+                        PdfTool.Services.PdfServiceExtensions.UnlockPdf(_loadedProtectFile, dlg.FileName, TxtProtectPassword.Text);
+                    ShowToast("PDF güvenlik işlemi başarıyla tamamlandı.");
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(dlg.FileName) { UseShellExecute = true });
+                } catch (Exception ex) { ShowToast($"Hata: {ex.Message}", false); }
+            }
+        }
+
+        // --- PAGE NUMBER ---
+        private string _loadedPageNumberFile;
+        private void BtnSelectPageNumberFile_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new OpenFileDialog { Filter = "PDF Belgeleri (*.pdf)|*.pdf" };
+            if (dlg.ShowDialog() == true) LoadPageNumberFile(dlg.FileName);
+        }
+        private void PageNumberDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files != null && files.Length > 0 && Path.GetExtension(files[0]).ToLower() == ".pdf")
+                    LoadPageNumberFile(files[0]);
+            }
+        }
+        private void LoadPageNumberFile(string path)
+        {
+            _loadedPageNumberFile = path;
+            TxtPageNumberFileName.Text = Path.GetFileName(path);
+            BtnPageNumberAction.IsEnabled = true;
+        }
+        private void BtnPageNumberAction_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new SaveFileDialog { Filter = "PDF (*.pdf)|*.pdf", FileName = "numarali.pdf" };
+            if (dlg.ShowDialog() == true)
+            {
+                try {
+                    PdfTool.Services.PdfServiceExtensions.AddPageNumbers(_loadedPageNumberFile, dlg.FileName, TxtPageNumberFormat.Text);
+                    ShowToast("PDF sayfa numaraları başarıyla eklendi.");
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(dlg.FileName) { UseShellExecute = true });
+                } catch (Exception ex) { ShowToast($"Hata: {ex.Message}", false); }
+            }
+        }
+
+        // --- EXTRACT TEXT ---
+        private string _loadedExtractTextFile;
+        private void BtnSelectExtractTextFile_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new OpenFileDialog { Filter = "PDF Belgeleri (*.pdf)|*.pdf" };
+            if (dlg.ShowDialog() == true) LoadExtractTextFile(dlg.FileName);
+        }
+        private void ExtractTextDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files != null && files.Length > 0 && Path.GetExtension(files[0]).ToLower() == ".pdf")
+                    LoadExtractTextFile(files[0]);
+            }
+        }
+        private void LoadExtractTextFile(string path)
+        {
+            _loadedExtractTextFile = path;
+            TxtExtractTextFileName.Text = Path.GetFileName(path);
+            BtnExtractTextAction.IsEnabled = true;
+        }
+        private void BtnExtractTextAction_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new SaveFileDialog { Filter = "Metin (*.txt)|*.txt", FileName = "metin.txt" };
+            if (dlg.ShowDialog() == true)
+            {
+                try {
+                    PdfTool.Services.PdfServiceExtensions.ExtractText(_loadedExtractTextFile, dlg.FileName);
+                    ShowToast("Metin çıkarma işlemi başarıyla tamamlandı.");
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(dlg.FileName) { UseShellExecute = true });
+                } catch (Exception ex) { ShowToast($"Hata: {ex.Message}", false); }
+            }
+        }
+
+        #endregion
+
         #endregion
     }
 
@@ -1413,4 +1564,5 @@ namespace PdfTool
         public string PageInfo { get; set; } = string.Empty;
         public int PageCount { get; set; }
     }
+
 }
