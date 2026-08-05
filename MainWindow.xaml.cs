@@ -176,6 +176,7 @@ namespace PdfTool
                     {
                         AddFileToMergeList(pdf);
                     }
+                    UpdateMergeStatus();
                     ShowToast($"{pdfFiles.Count} adet PDF birleştirme listesine eklendi.");
                 }
                 else if (pdfFiles.Count == 1)
@@ -187,11 +188,15 @@ namespace PdfTool
                 else if (imageFiles.Count > 0)
                 {
                     BtnNavToPdf.IsChecked = true;
+                    int addedCount = 0;
                     foreach (var img in imageFiles)
                     {
-                        AddFileToToPdfList(img);
+                        if (AddFileToToPdfList(img))
+                            addedCount++;
                     }
-                    ShowToast($"{imageFiles.Count} adet görsel PDF dönüştürme listesine eklendi.");
+                    UpdateToPdfStatus();
+                    if (addedCount > 0)
+                        ShowToast($"{addedCount} adet görsel PDF dönüştürme listesine eklendi.");
                 }
                 else
                 {
@@ -272,11 +277,11 @@ namespace PdfTool
             }
         }
 
-        private void AddFileToMergeList(string path)
+        private bool AddFileToMergeList(string path)
         {
             // Avoid adding duplicates
             if (_mergeFiles.Any(f => f.FilePath.Equals(path, StringComparison.OrdinalIgnoreCase)))
-                return;
+                return false;
 
             int pageCount = PdfService.GetPdfPageCount(path);
             _mergeFiles.Add(new FileItem
@@ -286,6 +291,7 @@ namespace PdfTool
                 PageCount = pageCount,
                 PageInfo = $"{pageCount} Sayfa"
             });
+            return true;
         }
 
         private void BtnMergeAdd_Click(object sender, RoutedEventArgs e)
@@ -299,9 +305,16 @@ namespace PdfTool
 
             if (dialog.ShowDialog() == true)
             {
+                int addedCount = 0;
                 foreach (string file in dialog.FileNames)
                 {
-                    AddFileToMergeList(file);
+                    if (AddFileToMergeList(file))
+                        addedCount++;
+                }
+                UpdateMergeStatus();
+                if (addedCount > 0)
+                {
+                    ShowToast($"{addedCount} adet PDF eklendi.");
                 }
             }
         }
@@ -362,6 +375,8 @@ namespace PdfTool
                     var filePaths = _mergeFiles.Select(f => f.FilePath).ToList();
                     PdfService.MergePdf(filePaths, dialog.FileName);
                     ShowToast("PDF birleştirme işlemi başarıyla tamamlandı.");
+                    
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(dialog.FileName) { UseShellExecute = true });
                 }
                 catch (Exception ex)
                 {
@@ -732,16 +747,17 @@ namespace PdfTool
             }
         }
 
-        private void AddFileToToPdfList(string path)
+        private bool AddFileToToPdfList(string path)
         {
             if (_toPdfFiles.Any(f => f.FilePath.Equals(path, StringComparison.OrdinalIgnoreCase)))
-                return;
+                return false;
 
             _toPdfFiles.Add(new FileItem
             {
                 FileName = Path.GetFileName(path),
                 FilePath = path
             });
+            return true;
         }
 
         private void BtnToPdfAdd_Click(object sender, RoutedEventArgs e)
@@ -755,9 +771,16 @@ namespace PdfTool
 
             if (dialog.ShowDialog() == true)
             {
+                int addedCount = 0;
                 foreach (string file in dialog.FileNames)
                 {
-                    AddFileToToPdfList(file);
+                    if (AddFileToToPdfList(file))
+                        addedCount++;
+                }
+                UpdateToPdfStatus();
+                if (addedCount > 0)
+                {
+                    ShowToast($"{addedCount} adet görsel listeye eklendi.");
                 }
             }
         }
@@ -818,6 +841,8 @@ namespace PdfTool
                     var filePaths = _toPdfFiles.Select(f => f.FilePath).ToList();
                     PdfService.ConvertImagesToPdf(filePaths, dialog.FileName);
                     ShowToast("Görseller başarıyla PDF dosyasına dönüştürüldü.");
+                    
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(dialog.FileName) { UseShellExecute = true });
                 }
                 catch (Exception ex)
                 {
@@ -919,10 +944,13 @@ namespace PdfTool
                 {
                     if (Path.GetExtension(file).ToLower() == ".pdf")
                     {
-                        AddFileToMergeList(file);
-                        addedCount++;
+                        if (AddFileToMergeList(file))
+                        {
+                            addedCount++;
+                        }
                     }
                 }
+                UpdateMergeStatus();
                 if (addedCount > 0)
                 {
                     ShowToast($"{addedCount} adet PDF birleştirme listesine eklendi.");
@@ -974,10 +1002,11 @@ namespace PdfTool
                     var ext = Path.GetExtension(file).ToLower();
                     if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp")
                     {
-                        AddFileToToPdfList(file);
-                        addedCount++;
+                        if (AddFileToToPdfList(file))
+                            addedCount++;
                     }
                 }
+                UpdateToPdfStatus();
                 if (addedCount > 0)
                 {
                     ShowToast($"{addedCount} adet görsel listeye eklendi.");
