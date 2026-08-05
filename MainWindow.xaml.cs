@@ -91,6 +91,7 @@ namespace PdfTool
             else if (sender == BtnNavProtect) MainTabControl.SelectedIndex = 9;
             else if (sender == BtnNavPageNumber) MainTabControl.SelectedIndex = 10;
             else if (sender == BtnNavExtractText) MainTabControl.SelectedIndex = 11;
+            else if (sender == BtnNavExtractImage) MainTabControl.SelectedIndex = 12;
         }
 
         private void CardMerge_Click(object sender, RoutedEventArgs e) => BtnNavMerge.IsChecked = true;
@@ -1434,7 +1435,11 @@ namespace PdfTool
             if (dlg.ShowDialog() == true)
             {
                 try {
-                    PdfTool.Services.PdfServiceExtensions.CompressPdf(_loadedCompressFile, dlg.FileName);
+                    int level = CmbCompressLevel.SelectedIndex;
+                    bool compressImages = ChkCompressImages.IsChecked == true;
+                    bool compressStreams = ChkCompressStreams.IsChecked == true;
+                    
+                    PdfTool.Services.PdfServiceExtensions.CompressPdf(_loadedCompressFile, dlg.FileName, level, compressImages, compressStreams);
                     ShowToast("PDF başarıyla sıkıştırıldı.");
                     System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(dlg.FileName) { UseShellExecute = true });
                 } catch (Exception ex) { ShowToast($"Hata: {ex.Message}", false); }
@@ -1507,7 +1512,9 @@ namespace PdfTool
             if (dlg.ShowDialog() == true)
             {
                 try {
-                    PdfTool.Services.PdfServiceExtensions.AddPageNumbers(_loadedPageNumberFile, dlg.FileName, TxtPageNumberFormat.Text);
+                    int position = CmbPageNumberPosition.SelectedIndex;
+                    int fontSize = (int)SldPageNumberSize.Value;
+                    PdfTool.Services.PdfServiceExtensions.AddPageNumbers(_loadedPageNumberFile, dlg.FileName, TxtPageNumberFormat.Text, position, fontSize);
                     ShowToast("PDF sayfa numaraları başarıyla eklendi.");
                     System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(dlg.FileName) { UseShellExecute = true });
                 } catch (Exception ex) { ShowToast($"Hata: {ex.Message}", false); }
@@ -1550,6 +1557,45 @@ namespace PdfTool
         }
 
         #endregion
+        // --- EXTRACT IMAGE ---
+        private string _loadedExtractImageFile;
+        private void BtnSelectExtractImageFile_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new OpenFileDialog { Filter = "PDF Belgeleri (*.pdf)|*.pdf" };
+            if (dlg.ShowDialog() == true) LoadExtractImageFile(dlg.FileName);
+        }
+        private void ExtractImageDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files != null && files.Length > 0 && Path.GetExtension(files[0]).ToLower() == ".pdf")
+                    LoadExtractImageFile(files[0]);
+            }
+        }
+        private void LoadExtractImageFile(string path)
+        {
+            _loadedExtractImageFile = path;
+            TxtExtractImageFileName.Text = Path.GetFileName(path);
+            BtnExtractImageAction.IsEnabled = true;
+        }
+        private void BtnExtractImageAction_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new SaveFileDialog { 
+                Title = "Klasör Seçmek İçin Dosya Adını Dokunmadan Kaydet'e Basın",
+                Filter = "Klasör Yolu (*.klasor)|*.klasor", 
+                FileName = "Gorselleri_Buraya_Cikar.klasor" 
+            };
+            if (dlg.ShowDialog() == true)
+            {
+                try {
+                    string outFolder = Path.GetDirectoryName(dlg.FileName);
+                    PdfTool.Services.PdfServiceExtensions.ExtractImages(_loadedExtractImageFile, outFolder);
+                    ShowToast("Görseller başarıyla klasöre çıkarıldı.");
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", outFolder) { UseShellExecute = true });
+                } catch (Exception ex) { ShowToast($"Hata: {ex.Message}", false); }
+            }
+        }
 
         #endregion
     }

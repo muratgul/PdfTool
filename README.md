@@ -7,13 +7,14 @@
 ## 🚀 Özellikler
 
 - **PDF Birleştir (Merge):** Sürükle-bırak yöntemiyle dilediğiniz sayıda PDF dosyasını tek bir belge haline getirin.
-- **PDF Sıkıştır (Compress):** Büyük boyutlu dosyalarınızı optimize ederek kaliteden ödün vermeden boyutunu küçültün.
+- **PDF Sıkıştır (Compress):** Büyük boyutlu dosyalarınızı optimize edin. Sıkıştırma seviyesi, sadece görselleri veya sadece metinleri sıkıştırma gibi gelişmiş ayarlarla kaliteden ödün vermeden boyutları küçültün.
 - **Şifrele / Çöz (Protect & Unlock):** Belgelerinize açılış parolası koyarak yetkisiz erişimi engelleyin veya yetkiniz olan dosyaların kısıtlamalarını tamamen kaldırın.
 - **Sayfa Döndür (Rotate):** PDF içerisindeki belirlediğiniz sayfaları (hepsi veya 1-3, 5 gibi) 90°, 180° veya 270° açılarla döndürün.
 - **Sayfa Sil (Delete):** Belgenizde bulunmasını istemediğiniz sayfaları kolayca seçip silerek yeni belge oluşturun.
 - **PDF Böl / Ayıkla (Split):** PDF dosyanızı belirli sayfalara göre ayırın veya tüm sayfaları ayrı ayrı bağımsız PDF'ler olarak klasöre çıkartın.
-- **Sayfa Numarası Ekle (Add Page Numbers):** Tüm sayfaların alt kısmına "Sayfa X / Y" formatında şık ve otomatik numaralandırma ekleyin.
+- **Sayfa Numarası Ekle (Add Page Numbers):** İster sol, ister sağ köşeye istediğiniz punto büyüklüğünde şık ve otomatik sayfa numarası ekleyin.
 - **Metin Çıkar (Extract Text):** PDF'in içerisine gömülü olan tüm metinleri hızlıca tarayıp `.txt` dosyası olarak kaydedin.
+- **Görselleri Çıkar (Extract Images):** PDF belgesinin içerisine gömülü olan (JPEG formatındaki) tüm görselleri saniyeler içinde tarayıp tek seferde bir klasöre çıkartın.
 - **Filigran Ekle (Watermark):** Sayfaların merkezine metin veya görsel formatında şeffaf filigran (watermark) ekleyerek belgelerinizi markalayın.
 - **Görsele Çevir (PDF to Image):** PDF sayfalarınızı yüksek çözünürlüklü görseller (PNG, JPG vb.) olarak tek tuşla dışa aktarın.
 - **Görselden PDF'e (Image to PDF):** Elinizdeki fotoğrafları ve görselleri tek bir PDF belgesi içerisinde derleyin.
