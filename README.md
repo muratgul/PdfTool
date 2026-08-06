@@ -28,7 +28,7 @@
 
 1. Repoyu bilgisayarınıza klonlayın:
    ```bash
-   git clone https://github.com/KULLANICI_ADINIZ/MEGPdf.git
+   git clone https://github.com/muratgul/PdfTool.git
    ```
 2. Projeyi Visual Studio veya Rider ile açın (Ya da komut satırında `dotnet build` komutunu çalıştırın).
 3. Uygulamayı başlatarak dosyalarınızı arayüze sürükleyip anında işlem yapmaya başlayın!
