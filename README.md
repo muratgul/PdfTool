@@ -4,6 +4,8 @@
 
 Şık **Açık (Light) ve Koyu (Dark) Tema** desteği ve kullanıcı dostu arayüzü sayesinde, karmaşık menüler arasında kaybolmadan dosyalarınızı sürükleyip bırakarak işlemlerinizi anında tamamlayabilirsiniz. Tema tercihleriniz otomatik olarak kaydedilir.
 
+![Uygulama Ekran Görüntüsü](screenshot.png)
+
 ## 🚀 Özellikler
 
 - **PDF Birleştir (Merge):** Sürükle-bırak yöntemiyle dilediğiniz sayıda PDF dosyasını tek bir belge haline getirin.
