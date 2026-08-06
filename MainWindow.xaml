@@ -12,7 +12,7 @@
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource BackgroundDark}"
         Foreground="{DynamicResource TextLight}"
-        Icon="icon.ico"
+        Icon="pack://application:,,,/icon.ico"
         FontFamily="Segoe UI, Segoe UI Semibold, Roboto, Helvetica, Arial">
 
     <Window.Resources>
