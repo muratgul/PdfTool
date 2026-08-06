@@ -14,6 +14,7 @@ public partial class App : System.Windows.Application
         base.OnStartup(e);
         try
         {
+            PdfTool.Services.ThemeManager.InitializeTheme();
             FontResolverPdfSharp.Register();
         }
         catch (Exception ex)

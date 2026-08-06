@@ -2,7 +2,7 @@
 
 **MEGPdf**, .NET ve WPF altyapısı kullanılarak geliştirilmiş, PDF dosyalarınız üzerinde ihtiyaç duyabileceğiniz tüm temel ve gelişmiş işlemleri hızlı, güvenli ve kolay bir şekilde gerçekleştirmenizi sağlayan modern bir masaüstü uygulamasıdır. 
 
-Şık karanlık teması (Dark Mode) ve kullanıcı dostu arayüzü sayesinde, karmaşık menüler arasında kaybolmadan dosyalarınızı sürükleyip bırakarak işlemlerinizi anında tamamlayabilirsiniz.
+Şık **Açık (Light) ve Koyu (Dark) Tema** desteği ve kullanıcı dostu arayüzü sayesinde, karmaşık menüler arasında kaybolmadan dosyalarınızı sürükleyip bırakarak işlemlerinizi anında tamamlayabilirsiniz. Tema tercihleriniz otomatik olarak kaydedilir.
 
 ## 🚀 Özellikler
 

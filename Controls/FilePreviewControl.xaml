@@ -1,0 +1,44 @@
+<UserControl x:Class="PdfTool.Controls.FilePreviewControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="400">
+    <Grid>
+        <!-- Empty State -->
+        <StackPanel x:Name="PanelEmpty" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,20,0,20">
+            <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{DynamicResource BorderDark}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
+            <Button Content="PDF Seçin" Style="{DynamicResource ModernButtonStyle}" Click="BtnSelect_Click" HorizontalAlignment="Center"/>
+            <TextBlock Text="veya dosyayı buraya sürükleyin" Foreground="{DynamicResource TextGray}" FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Loaded State -->
+        <Border x:Name="PanelLoaded" Visibility="Collapsed" Background="{DynamicResource BackgroundCard}" BorderBrush="{DynamicResource BorderDark}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,10,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Thumbnail -->
+                <Border Grid.Column="0" Width="40" Height="56" Background="{DynamicResource BackgroundHover}" BorderBrush="{DynamicResource BorderDark}" BorderThickness="1" CornerRadius="4" Margin="0,0,10,0">
+                    <Grid>
+                        <Path x:Name="IconFallback" Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{DynamicResource PrimaryBrush}" Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Image x:Name="ImgThumbnail" Stretch="UniformToFill" Margin="1" Visibility="Hidden"/>
+                    </Grid>
+                </Border>
+
+                <!-- Info -->
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="5,0,0,0">
+                    <TextBlock x:Name="TxtFileName" Text="Dosya" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource TextDark}" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock x:Name="TxtFileInfo" Text="Bilgi" FontSize="13" Foreground="{DynamicResource TextLight}" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <!-- Change Button -->
+                <Button Grid.Column="2" Content="Değiştir" Style="{DynamicResource SecondaryButtonStyle}" Click="BtnSelect_Click" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

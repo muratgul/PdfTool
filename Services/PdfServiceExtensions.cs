@@ -6,6 +6,7 @@ using PdfSharp.Pdf.IO;
 using PdfSharp.Pdf.Security;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf.Advanced;
+using System.Windows.Media.Imaging;
 
 namespace PdfTool.Services
 {
@@ -17,20 +18,83 @@ namespace PdfTool.Services
             using (PdfDocument document = PdfReader.Open(sourceFile, PdfDocumentOpenMode.Modify))
             {
                 document.Options.CompressContentStreams = compressContent;
-                
-                if (compressImages)
-                    document.Options.UseFlateDecoderForJpegImages = PdfUseFlateDecoderForJpegImages.Always;
-                else
-                    document.Options.UseFlateDecoderForJpegImages = PdfUseFlateDecoderForJpegImages.Never;
 
+                int jpegQuality = 50;
                 switch (compressionLevel)
                 {
-                    case 0: document.Options.FlateEncodeMode = PdfFlateEncodeMode.BestSpeed; break;
-                    case 1: document.Options.FlateEncodeMode = PdfFlateEncodeMode.Default; break;
-                    case 2: document.Options.FlateEncodeMode = PdfFlateEncodeMode.BestCompression; break;
-                    default: document.Options.FlateEncodeMode = PdfFlateEncodeMode.Default; break;
+                    case 0: 
+                        document.Options.FlateEncodeMode = PdfFlateEncodeMode.BestSpeed; 
+                        jpegQuality = 75; // Low compression, high quality
+                        break;
+                    case 1: 
+                        document.Options.FlateEncodeMode = PdfFlateEncodeMode.Default; 
+                        jpegQuality = 50; // Medium compression
+                        break;
+                    case 2: 
+                        document.Options.FlateEncodeMode = PdfFlateEncodeMode.BestCompression; 
+                        jpegQuality = 25; // High compression, lower quality
+                        break;
+                    default: 
+                        document.Options.FlateEncodeMode = PdfFlateEncodeMode.Default; 
+                        break;
+                }
+
+                if (compressImages)
+                {
+                    document.Options.UseFlateDecoderForJpegImages = PdfUseFlateDecoderForJpegImages.Never;
+
+                    // Actually re-compress JPEG images inside the PDF
+                    foreach (PdfPage page in document.Pages)
+                    {
+                        PdfDictionary resources = page.Elements.GetDictionary("/Resources");
+                        if (resources != null)
+                        {
+                            PdfDictionary xObjects = resources.Elements.GetDictionary("/XObject");
+                            if (xObjects != null)
+                            {
+                                foreach (PdfItem item in xObjects.Elements.Values)
+                                {
+                                    if (item is PdfReference reference && reference.Value is PdfDictionary xObject)
+                                    {
+                                        if (xObject.Elements.GetString("/Subtype") == "/Image" && xObject.Elements.GetName("/Filter") == "/DCTDecode")
+                                        {
+                                            try
+                                            {
+                                                byte[] originalBytes = xObject.Stream.Value;
+                                                using (var msOriginal = new MemoryStream(originalBytes))
+                                                {
+                                                    var decoder = new JpegBitmapDecoder(msOriginal, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
+                                                    var encoder = new JpegBitmapEncoder { QualityLevel = jpegQuality };
+                                                    encoder.Frames.Add(decoder.Frames[0]);
+                                                    
+                                                    using (var msCompressed = new MemoryStream())
+                                                    {
+                                                        encoder.Save(msCompressed);
+                                                        byte[] compressedBytes = msCompressed.ToArray();
+                                                        
+                                                        // Update the stream only if the compressed size is smaller
+                                                        if (compressedBytes.Length < originalBytes.Length)
+                                                        {
+                                                            xObject.Stream.Value = compressedBytes;
+                                                            xObject.Elements.SetInteger("/Length", compressedBytes.Length);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            catch { /* Ignore invalid image streams */ }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    document.Options.UseFlateDecoderForJpegImages = PdfUseFlateDecoderForJpegImages.Never;
                 }
                 
+                document.Options.NoCompression = false;
                 document.Save(outputFile);
             }
         }
@@ -65,11 +129,17 @@ namespace PdfTool.Services
         }
 
         // 3. Add Page Numbers
-        public static void AddPageNumbers(string sourceFile, string outputFile, string format = "Sayfa {0} / {1}", int position = 1, int fontSize = 10)
+        public static void AddPageNumbers(string sourceFile, string outputFile, string format = "Sayfa {0} / {1}", int position = 1, int fontSize = 10, int margin = 20, string fontFamily = "Arial")
         {
             using (PdfDocument document = PdfReader.Open(sourceFile, PdfDocumentOpenMode.Modify))
             {
-                XFont font = new XFont("Arial", fontSize, XFontStyleEx.Regular);
+                // JPEGs should never be touched to preserve original image quality
+                document.Options.UseFlateDecoderForJpegImages = PdfUseFlateDecoderForJpegImages.Never;
+                // Enable lossless compression for text/layout to avoid huge file sizes
+                document.Options.CompressContentStreams = true;
+                document.Options.NoCompression = false;
+
+                XFont font = new XFont(fontFamily, fontSize, XFontStyleEx.Regular);
                 XBrush brush = XBrushes.Black;
                 int pageCount = document.PageCount;
 
@@ -83,7 +153,6 @@ namespace PdfTool.Services
                         
                         double x = 0;
                         double y = 0;
-                        double margin = 20;
 
                         // Position mapping:
                         // 0: Bottom Left, 1: Bottom Center, 2: Bottom Right

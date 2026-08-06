@@ -60,6 +60,7 @@ namespace PdfTool
         public MainWindow()
         {
             InitializeComponent();
+            TxtVersion.Text = $"MEGPdf v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}";
 
             // Bind ListBoxes
             LstMergeFiles.ItemsSource = _mergeFiles;
@@ -101,8 +102,18 @@ namespace PdfTool
         private void CardWatermark_Click(object sender, RoutedEventArgs e) => BtnNavWatermark.IsChecked = true;
         private void CardToImage_Click(object sender, RoutedEventArgs e) => BtnNavToImage.IsChecked = true;
         private void CardToPdf_Click(object sender, RoutedEventArgs e) => BtnNavToPdf.IsChecked = true;
+        private void CardCompress_Click(object sender, RoutedEventArgs e) => BtnNavCompress.IsChecked = true;
+        private void CardProtect_Click(object sender, RoutedEventArgs e) => BtnNavProtect.IsChecked = true;
+        private void CardPageNumber_Click(object sender, RoutedEventArgs e) => BtnNavPageNumber.IsChecked = true;
+        private void CardExtractText_Click(object sender, RoutedEventArgs e) => BtnNavExtractText.IsChecked = true;
+        private void CardExtractImage_Click(object sender, RoutedEventArgs e) => BtnNavExtractImage.IsChecked = true;
 
         #endregion
+
+        private void BtnToggleTheme_Click(object sender, RoutedEventArgs e)
+        {
+            PdfTool.Services.ThemeManager.ToggleTheme();
+        }
 
         #region Toast Notification System
 
@@ -443,7 +454,7 @@ namespace PdfTool
             var dialog = new SaveFileDialog
             {
                 Filter = "PDF Belgesi (*.pdf)|*.pdf",
-                FileName = "[Dondurulmus] " + Path.GetFileName(_loadedRotateFile),
+                FileName = Path.GetFileNameWithoutExtension(_loadedRotateFile) + "_dondurulmus.pdf",
                 Title = "Döndürülen PDF Belgesini Kaydet"
             };
 
@@ -513,7 +524,7 @@ namespace PdfTool
             var dialog = new SaveFileDialog
             {
                 Filter = "PDF Belgesi (*.pdf)|*.pdf",
-                FileName = "[Sayfa_Silinmis] " + Path.GetFileName(_loadedDeleteFile),
+                FileName = Path.GetFileNameWithoutExtension(_loadedDeleteFile) + "_sayfalar_silinmis.pdf",
                 Title = "Yeni PDF Belgesini Kaydet"
             };
 
@@ -591,7 +602,7 @@ namespace PdfTool
             var dialog = new SaveFileDialog
             {
                 Filter = "PDF Belgesi (*.pdf)|*.pdf",
-                FileName = "[Filigranli] " + Path.GetFileName(_loadedWatermarkFile),
+                FileName = Path.GetFileNameWithoutExtension(_loadedWatermarkFile) + "_filigranli.pdf",
                 Title = "Filigranlı PDF Belgesini Kaydet"
             };
 
@@ -1426,12 +1437,12 @@ namespace PdfTool
         private void LoadCompressFile(string path)
         {
             _loadedCompressFile = path;
-            TxtCompressFileName.Text = Path.GetFileName(path);
+            PreviewCompressFile.LoadFile(path);
             BtnCompressAction.IsEnabled = true;
         }
         private void BtnCompressAction_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new SaveFileDialog { Filter = "PDF (*.pdf)|*.pdf", FileName = "sikistirilmis.pdf" };
+            var dlg = new SaveFileDialog { Filter = "PDF (*.pdf)|*.pdf", FileName = Path.GetFileNameWithoutExtension(_loadedCompressFile) + "_sikistirilmis.pdf" };
             if (dlg.ShowDialog() == true)
             {
                 try {
@@ -1465,12 +1476,13 @@ namespace PdfTool
         private void LoadProtectFile(string path)
         {
             _loadedProtectFile = path;
-            TxtProtectFileName.Text = Path.GetFileName(path);
+            PreviewProtectFile.LoadFile(path);
             BtnProtectAction.IsEnabled = true;
         }
         private void BtnProtectAction_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new SaveFileDialog { Filter = "PDF (*.pdf)|*.pdf", FileName = "islem_gormus.pdf" };
+            string suffix = CmbProtectAction.SelectedIndex == 0 ? "_sifreli.pdf" : "_kilidi_acilmis.pdf";
+            var dlg = new SaveFileDialog { Filter = "PDF (*.pdf)|*.pdf", FileName = Path.GetFileNameWithoutExtension(_loadedProtectFile) + suffix };
             if (dlg.ShowDialog() == true)
             {
                 try {
@@ -1503,18 +1515,28 @@ namespace PdfTool
         private void LoadPageNumberFile(string path)
         {
             _loadedPageNumberFile = path;
-            TxtPageNumberFileName.Text = Path.GetFileName(path);
+            PreviewPageNumberFile.LoadFile(path);
             BtnPageNumberAction.IsEnabled = true;
         }
         private void BtnPageNumberAction_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new SaveFileDialog { Filter = "PDF (*.pdf)|*.pdf", FileName = "numarali.pdf" };
+            var dlg = new SaveFileDialog { Filter = "PDF (*.pdf)|*.pdf", FileName = Path.GetFileNameWithoutExtension(_loadedPageNumberFile) + "_numarali.pdf" };
             if (dlg.ShowDialog() == true)
             {
                 try {
-                    int position = CmbPageNumberPosition.SelectedIndex;
+                    int position = 1;
+                    if (PosBL.IsChecked == true) position = 0;
+                    if (PosBC.IsChecked == true) position = 1;
+                    if (PosBR.IsChecked == true) position = 2;
+                    if (PosTL.IsChecked == true) position = 3;
+                    if (PosTC.IsChecked == true) position = 4;
+                    if (PosTR.IsChecked == true) position = 5;
+
+                    int margin = (int)SldPageNumberMargin.Value;
+                    string fontName = ((ComboBoxItem)CmbPageNumberFont.SelectedItem).Content.ToString();
                     int fontSize = (int)SldPageNumberSize.Value;
-                    PdfTool.Services.PdfServiceExtensions.AddPageNumbers(_loadedPageNumberFile, dlg.FileName, TxtPageNumberFormat.Text, position, fontSize);
+                    
+                    PdfTool.Services.PdfServiceExtensions.AddPageNumbers(_loadedPageNumberFile, dlg.FileName, TxtPageNumberFormat.Text, position, fontSize, margin, fontName);
                     ShowToast("PDF sayfa numaraları başarıyla eklendi.");
                     System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(dlg.FileName) { UseShellExecute = true });
                 } catch (Exception ex) { ShowToast($"Hata: {ex.Message}", false); }
@@ -1540,12 +1562,12 @@ namespace PdfTool
         private void LoadExtractTextFile(string path)
         {
             _loadedExtractTextFile = path;
-            TxtExtractTextFileName.Text = Path.GetFileName(path);
+            PreviewExtractTextFile.LoadFile(path);
             BtnExtractTextAction.IsEnabled = true;
         }
         private void BtnExtractTextAction_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new SaveFileDialog { Filter = "Metin (*.txt)|*.txt", FileName = "metin.txt" };
+            var dlg = new SaveFileDialog { Filter = "Metin (*.txt)|*.txt", FileName = Path.GetFileNameWithoutExtension(_loadedExtractTextFile) + "_metin.txt" };
             if (dlg.ShowDialog() == true)
             {
                 try {
@@ -1576,7 +1598,7 @@ namespace PdfTool
         private void LoadExtractImageFile(string path)
         {
             _loadedExtractImageFile = path;
-            TxtExtractImageFileName.Text = Path.GetFileName(path);
+            PreviewExtractImageFile.LoadFile(path);
             BtnExtractImageAction.IsEnabled = true;
         }
         private void BtnExtractImageAction_Click(object sender, RoutedEventArgs e)

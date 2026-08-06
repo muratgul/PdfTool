@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PdfTool"
+        xmlns:controls="clr-namespace:PdfTool.Controls"
         mc:Ignorable="d"
         Title="MEGPdf - Modern PDF Araç Kutusu" 
         Height="800" Width="1000"
@@ -11,24 +12,13 @@
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource BackgroundDark}"
         Foreground="{DynamicResource TextLight}"
+        Icon="icon.ico"
         FontFamily="Segoe UI, Segoe UI Semibold, Roboto, Helvetica, Arial">
 
     <Window.Resources>
-        <!-- Color Palette (Light Theme) -->
-        <SolidColorBrush x:Key="PrimaryBrush" Color="#0D9488"/> <!-- Teal -->
-        <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#0F766E"/>
-        <SolidColorBrush x:Key="BackgroundDark" Color="#F3F4F6"/> <!-- Light Gray background -->
-        <SolidColorBrush x:Key="BackgroundCard" Color="#FFFFFF"/> <!-- White cards -->
-        <SolidColorBrush x:Key="BackgroundInput" Color="#FFFFFF"/> <!-- White input background -->
-        <SolidColorBrush x:Key="BorderDark" Color="#D1D5DB"/> <!-- Light Border -->
-        <SolidColorBrush x:Key="TextLight" Color="#111827"/> <!-- Dark text (main) -->
-        <SolidColorBrush x:Key="TextGray" Color="#4B5563"/> <!-- Gray text -->
-        <SolidColorBrush x:Key="ErrorBrush" Color="#EF4444"/>
-        <SolidColorBrush x:Key="SuccessBrush" Color="#10B981"/>
-
         <!-- Rounded Buttons Style -->
         <Style x:Key="ModernButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="16,10"/>
@@ -46,7 +36,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource PrimaryHoverBrush}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
                                 <Setter TargetName="border" Property="Background" Value="#9CA3AF"/>
@@ -59,13 +49,13 @@
         </Style>
 
         <Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
-            <Setter Property="Background" Value="#FFFFFF"/>
-            <Setter Property="Foreground" Value="{StaticResource TextLight}"/>
+            <Setter Property="Background" Value="{DynamicResource BackgroundCard}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextLight}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="border" Background="{TemplateBinding Background}" 
-                                BorderBrush="{StaticResource BorderDark}"
+                                BorderBrush="{DynamicResource BorderDark}"
                                 BorderThickness="1"
                                 CornerRadius="6" 
                                 Padding="{TemplateBinding Padding}">
@@ -73,7 +63,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter TargetName="border" Property="Background" Value="#F3F4F6"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource BackgroundHover}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -83,7 +73,7 @@
 
         <!-- Red Action Button Style (e.g. Remove, Clear) -->
         <Style x:Key="DangerButtonStyle" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
-            <Setter Property="Background" Value="{StaticResource ErrorBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ErrorBrush}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -102,14 +92,29 @@
             </Setter>
         </Style>
 
+        <Style TargetType="ComboBox">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderDark}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="Foreground" Value="{DynamicResource TextLight}"/>
+                        <Setter Property="Background" Value="{DynamicResource BackgroundInput}"/>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Modern TextBox Style -->
         <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
-            <Setter Property="Background" Value="{StaticResource BackgroundInput}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextLight}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderDark}"/>
+            <Setter Property="Background" Value="{DynamicResource BackgroundInput}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextLight}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderDark}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="10,8"/>
-            <Setter Property="CaretBrush" Value="Black"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource TextLight}"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -122,7 +127,30 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsFocused" Value="true">
-                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ToggleButton for Grid Position -->
+        <Style x:Key="PositionToggleStyle" TargetType="RadioButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="border" Background="{DynamicResource BackgroundCard}" BorderBrush="{DynamicResource BorderDark}" BorderThickness="1" CornerRadius="4" Margin="2">
+                            <TextBlock x:Name="txt" Text="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextLight}" FontSize="18" FontWeight="Bold"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+                                <Setter TargetName="txt" Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.8"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -134,7 +162,7 @@
         <Style x:Key="SidebarButtonStyle" TargetType="RadioButton">
             <Setter Property="GroupName" Value="SidebarMenu"/>
             <Setter Property="Height" Value="45"/>
-            <Setter Property="Foreground" Value="{StaticResource TextGray}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextGray}"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Margin" Value="0,2"/>
@@ -148,33 +176,23 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <ContentPresenter x:Name="iconPresenter" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="{TemplateBinding Content}" VerticalAlignment="Center" FontSize="13" FontWeight="Medium" Margin="5,0,0,0"/>
+                                <TextBlock Foreground="{DynamicResource TextLight}" Grid.Column="1" Text="{TemplateBinding Content}" VerticalAlignment="Center" FontSize="13" FontWeight="Medium" Margin="5,0,0,0"/>
                             </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter TargetName="border" Property="Background" Value="#F3F4F6"/>
-                                <Setter Property="Foreground" Value="{StaticResource TextLight}"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource BackgroundHover}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource TextLight}"/>
                             </Trigger>
                             <Trigger Property="IsChecked" Value="true">
-                                <Setter TargetName="border" Property="Background" Value="#E6F4F1"/>
-                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
-                                <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource BackgroundActive}"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-        </Style>
-
-        <!-- ComboBox Styling -->
-        <Style TargetType="ComboBox">
-            <Setter Property="Background" Value="{StaticResource BackgroundInput}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextLight}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderDark}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="8,6"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
         </Style>
 
         <!-- Slider Styling -->
@@ -191,7 +209,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- Left Sidebar Navigation -->
-        <Border Grid.Column="0" Background="{StaticResource BackgroundCard}" BorderBrush="{StaticResource BorderDark}" BorderThickness="0,0,1,0">
+        <Border Grid.Column="0" Background="{DynamicResource BackgroundCard}" BorderBrush="{DynamicResource BorderDark}" BorderThickness="0,0,1,0">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="80"/>
@@ -202,14 +220,14 @@
                 <!-- App Header / Logo -->
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Path Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V7h2v2zm6 12H12v-2h4v2zm0-4H12v-2h4v2zm0-4H12V7h4v2z" 
-                          Fill="{StaticResource PrimaryBrush}" Width="26" Height="26" Stretch="Uniform" Margin="0,0,10,0"/>
-                    <TextBlock Text="MEGPdf" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextLight}" VerticalAlignment="Center"/>
+                          Fill="{DynamicResource PrimaryBrush}" Width="26" Height="26" Stretch="Uniform" Margin="0,0,10,0"/>
+                    <TextBlock Text="MEGPdf" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextLight}" VerticalAlignment="Center"/>
                 </StackPanel>
 
                 <!-- Navigation List -->
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="0,10,0,0">
-                        <RadioButton x:Name="BtnNavHome" Content="Ana Sayfa" IsChecked="true" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="BtnNavHome" Content="Ana Sayfa" IsChecked="true" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <Path Data="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
@@ -217,7 +235,7 @@
                             </RadioButton.ContentTemplate>
                         </RadioButton>
                         
-                        <RadioButton x:Name="BtnNavMerge" Content="PDF Birleştir" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="BtnNavMerge" Content="PDF Birleştir" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <Path Data="M9 2v14h8V2H9zm6 12H11V4h4v10zm-8 4v2h12v-2H7zm-4 4v2h16v-2H3z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
@@ -225,7 +243,7 @@
                             </RadioButton.ContentTemplate>
                         </RadioButton>
 
-                        <RadioButton x:Name="BtnNavRotate" Content="Sayfa Döndür" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="BtnNavRotate" Content="Sayfa Döndür" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <Path Data="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2M12 20A8 8 0 1 1 20 12A8 8 0 0 1 12 20M12 6V12L16 14.5L15 16L10 13V6H12Z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
@@ -233,7 +251,7 @@
                             </RadioButton.ContentTemplate>
                         </RadioButton>
 
-                        <RadioButton x:Name="BtnNavDelete" Content="Sayfa Sil" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="BtnNavDelete" Content="Sayfa Sil" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <Path Data="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
@@ -241,7 +259,7 @@
                             </RadioButton.ContentTemplate>
                         </RadioButton>
 
-                        <RadioButton x:Name="BtnNavSplit" Content="PDF Böl" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="BtnNavSplit" Content="PDF Böl" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <Path Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-6 2h2v5h-2V5zm-4 0h2v5H9V5zM5 5h2v5H5V5zm14 14H5v-7h14v7z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
@@ -249,7 +267,7 @@
                             </RadioButton.ContentTemplate>
                         </RadioButton>
 
-                        <RadioButton x:Name="BtnNavWatermark" Content="Filigran Ekle" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="BtnNavWatermark" Content="Filigran Ekle" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
@@ -257,7 +275,7 @@
                             </RadioButton.ContentTemplate>
                         </RadioButton>
 
-                        <RadioButton x:Name="BtnNavToImage" Content="Görsele Çevir" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="BtnNavToImage" Content="Görsele Çevir" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <Path Data="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0-2-.9-2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
@@ -265,7 +283,7 @@
                             </RadioButton.ContentTemplate>
                         </RadioButton>
 
-                        <RadioButton x:Name="BtnNavToPdf" Content="Görselden PDF'e" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="BtnNavToPdf" Content="Görselden PDF'e" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
@@ -273,7 +291,7 @@
                             </RadioButton.ContentTemplate>
                         </RadioButton>
 
-                        <RadioButton x:Name="BtnNavCompress" Content="PDF Sıkıştır" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="BtnNavCompress" Content="PDF Sıkıştır" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <Path Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9h-4v2h4v-2zm4-4h-8v2h8V8z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
@@ -281,7 +299,7 @@
                             </RadioButton.ContentTemplate>
                         </RadioButton>
 
-                        <RadioButton x:Name="BtnNavProtect" Content="Şifrele/Çöz" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="BtnNavProtect" Content="Şifrele/Çöz" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <Path Data="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
@@ -289,7 +307,7 @@
                             </RadioButton.ContentTemplate>
                         </RadioButton>
 
-                        <RadioButton x:Name="BtnNavPageNumber" Content="Sayfa Numarası" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="BtnNavPageNumber" Content="Sayfa Numarası" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <Path Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-4-4h3v-4h2v4h3l-4 4zm4-9V6l-4 4h-3v4h-2V6L5 8V6l4-4h2v4h3l4-4v2z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
@@ -297,7 +315,7 @@
                             </RadioButton.ContentTemplate>
                         </RadioButton>
 
-                        <RadioButton x:Name="BtnNavExtractText" Content="Metin Çıkar" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="BtnNavExtractText" Content="Metin Çıkar" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
@@ -305,7 +323,7 @@
                             </RadioButton.ContentTemplate>
                         </RadioButton>
 
-                        <RadioButton x:Name="BtnNavExtractImage" Content="Görselleri Çıkar" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
+                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="BtnNavExtractImage" Content="Görselleri Çıkar" Style="{StaticResource SidebarButtonStyle}" Checked="BtnNav_Checked">
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <Path Data="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}" Width="16" Height="16" Stretch="Uniform"/>
@@ -316,7 +334,12 @@
                 </ScrollViewer>
 
                 <!-- Footer / Info -->
-                <TextBlock Grid.Row="2" Text="MEGPdf v1.0 • Modern PDF" FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Grid Grid.Row="2" Margin="15,0">
+                    <TextBlock x:Name="TxtVersion" Text="MEGPdf" FontSize="11" Foreground="{DynamicResource TextGray}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <Button Click="BtnToggleTheme_Click" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Right" VerticalAlignment="Center" ToolTip="Açık/Koyu Tema">
+                        <Path Data="M12,2C17.52,2 22,6.48 22,12C22,17.52 17.52,22 12,22C6.48,22 2,17.52 2,12C2,6.48 6.48,2 12,2M12,4V20C16.42,20 20,16.42 20,12C20,7.58 16.42,4 12,4Z" Fill="{DynamicResource TextGray}" Width="18" Height="18" Stretch="Uniform"/>
+                    </Button>
+                </Grid>
             </Grid>
         </Border>
 
@@ -327,7 +350,7 @@
                 <RowDefinition Height="Auto"/> <!-- Global Toast/Notification Bar -->
             </Grid.RowDefinitions>
 
-            <TabControl x:Name="MainTabControl" BorderThickness="0" Background="Transparent" Padding="0" Grid.Row="0">
+            <TabControl x:Name="MainTabControl" BorderThickness="0" Background="Transparent" Padding="0" Grid.Row="0" Foreground="{DynamicResource TextLight}">
                 <TabControl.ItemContainerStyle>
                     <Style TargetType="TabItem">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -344,83 +367,128 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.Row="0" Margin="0,0,0,24">
-                            <TextBlock Text="MEGPdf Araç Kutusu'na Hoş Geldiniz" FontSize="26" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
-                            <TextBlock Text="PDF dosyalarınız üzerinde hızlı ve güvenli işlemler gerçekleştirin." FontSize="14" Foreground="{StaticResource TextGray}" Margin="0,4,0,0"/>
+                            <TextBlock Text="MEGPdf Araç Kutusu'na Hoş Geldiniz" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource TextLight}"/>
+                            <TextBlock Text="PDF dosyalarınız üzerinde hızlı ve güvenli işlemler gerçekleştirin." FontSize="14" Foreground="{DynamicResource TextGray}" Margin="0,4,0,0"/>
                         </StackPanel>
 
                         <!-- Dashboard Quick Cards -->
-                        <UniformGrid Grid.Row="1" Columns="3" Margin="0,0,0,20">
+                        <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,0,10">
                             <!-- Card 1: Merge -->
-                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="8" Padding="15" Click="CardMerge_Click">
+                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="6" Padding="12" Click="CardMerge_Click">
                                 <StackPanel VerticalAlignment="Center">
-                                    <Path Data="M9 2v14h8V2H9zm6 12H11V4h4v10zm-8 4v2h12v-2H7zm-4 4v2h16v-2H3z" Fill="{StaticResource PrimaryBrush}" Width="40" Height="40" Stretch="Uniform" Margin="0,0,0,12"/>
-                                    <TextBlock Text="PDF Birleştir" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Birden fazla PDF dosyasını tek dosyada birleştirin." FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                                    <Path Data="M9 2v14h8V2H9zm6 12H11V4h4v10zm-8 4v2h12v-2H7zm-4 4v2h16v-2H3z" Fill="{DynamicResource PrimaryBrush}" Width="32" Height="32" Stretch="Uniform" Margin="0,0,0,8"/>
+                                    <TextBlock Text="PDF Birleştir" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Birden fazla PDF dosyasını tek dosyada birleştirin." FontSize="11" Foreground="{DynamicResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,4,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Button>
 
                             <!-- Card 2: Rotate -->
-                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="8" Padding="15" Click="CardRotate_Click">
+                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="6" Padding="12" Click="CardRotate_Click">
                                 <StackPanel VerticalAlignment="Center">
-                                    <Path Data="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2M12 20A8 8 0 1 1 20 12A8 8 0 0 1 12 20M12 6V12L16 14.5L15 16L10 13V6H12Z" Fill="{StaticResource PrimaryBrush}" Width="40" Height="40" Stretch="Uniform" Margin="0,0,0,12"/>
-                                    <TextBlock Text="Sayfa Döndür" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Belirli sayfaları veya tüm sayfaları döndürün." FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                                    <Path Data="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2M12 20A8 8 0 1 1 20 12A8 8 0 0 1 12 20M12 6V12L16 14.5L15 16L10 13V6H12Z" Fill="{DynamicResource PrimaryBrush}" Width="32" Height="32" Stretch="Uniform" Margin="0,0,0,8"/>
+                                    <TextBlock Text="Sayfa Döndür" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Belirli sayfaları veya tüm sayfaları döndürün." FontSize="11" Foreground="{DynamicResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,4,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Button>
 
                             <!-- Card 3: Delete -->
-                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="8" Padding="15" Click="CardDelete_Click">
+                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="6" Padding="12" Click="CardDelete_Click">
                                 <StackPanel VerticalAlignment="Center">
-                                    <Path Data="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" Fill="{StaticResource PrimaryBrush}" Width="40" Height="40" Stretch="Uniform" Margin="0,0,0,12"/>
-                                    <TextBlock Text="Sayfa Sil" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="PDF belgesinden gereksiz sayfaları çıkarın." FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                                    <Path Data="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" Fill="{DynamicResource PrimaryBrush}" Width="32" Height="32" Stretch="Uniform" Margin="0,0,0,8"/>
+                                    <TextBlock Text="Sayfa Sil" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="PDF belgesinden gereksiz sayfaları çıkarın." FontSize="11" Foreground="{DynamicResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,4,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Button>
 
-                            <!-- Card 3b: Split -->
-                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="8" Padding="15" Click="CardSplit_Click">
+                            <!-- Card 4: Split -->
+                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="6" Padding="12" Click="CardSplit_Click">
                                 <StackPanel VerticalAlignment="Center">
-                                    <Path Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-6 2h2v5h-2V5zm-4 0h2v5H9V5zM5 5h2v5H5V5zm14 14H5v-7h14v7z" Fill="{StaticResource PrimaryBrush}" Width="40" Height="40" Stretch="Uniform" Margin="0,0,0,12"/>
-                                    <TextBlock Text="PDF Böl" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="PDF belgenizi sayfalara bölün veya ayıklayın." FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                                    <Path Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-6 2h2v5h-2V5zm-4 0h2v5H9V5zM5 5h2v5H5V5zm14 14H5v-7h14v7z" Fill="{DynamicResource PrimaryBrush}" Width="32" Height="32" Stretch="Uniform" Margin="0,0,0,8"/>
+                                    <TextBlock Text="PDF Böl" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="PDF belgenizi sayfalara bölün veya ayıklayın." FontSize="11" Foreground="{DynamicResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,4,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Button>
 
-                            <!-- Card 4: Watermark -->
-                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="8" Padding="15" Click="CardWatermark_Click">
+                            <!-- Card 5: Watermark -->
+                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="6" Padding="12" Click="CardWatermark_Click">
                                 <StackPanel VerticalAlignment="Center">
-                                    <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" Fill="{StaticResource PrimaryBrush}" Width="40" Height="40" Stretch="Uniform" Margin="0,0,0,12"/>
-                                    <TextBlock Text="Filigran Ekle" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Sayfalara metin veya görsel filigranlar basın." FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                                    <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" Fill="{DynamicResource PrimaryBrush}" Width="32" Height="32" Stretch="Uniform" Margin="0,0,0,8"/>
+                                    <TextBlock Text="Filigran Ekle" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Sayfalara metin veya görsel filigranlar basın." FontSize="11" Foreground="{DynamicResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,4,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Button>
 
-                            <!-- Card 5: PDF to Image -->
-                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="8" Padding="15" Click="CardToImage_Click">
+                            <!-- Card 6: PDF to Image -->
+                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="6" Padding="12" Click="CardToImage_Click">
                                 <StackPanel VerticalAlignment="Center">
-                                    <Path Data="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0-2-.9-2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" Fill="{StaticResource PrimaryBrush}" Width="40" Height="40" Stretch="Uniform" Margin="0,0,0,12"/>
-                                    <TextBlock Text="Görsele Çevir" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="PDF sayfalarını yüksek çözünürlüklü resim yapın." FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                                    <Path Data="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0-2-.9-2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" Fill="{DynamicResource PrimaryBrush}" Width="32" Height="32" Stretch="Uniform" Margin="0,0,0,8"/>
+                                    <TextBlock Text="Görsele Çevir" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="PDF sayfalarını yüksek çözünürlüklü resim yapın." FontSize="11" Foreground="{DynamicResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,4,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Button>
 
-                            <!-- Card 6: Image to PDF -->
-                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="8" Padding="15" Click="CardToPdf_Click">
+                            <!-- Card 7: Image to PDF -->
+                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="6" Padding="12" Click="CardToPdf_Click">
                                 <StackPanel VerticalAlignment="Center">
-                                    <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{StaticResource PrimaryBrush}" Width="40" Height="40" Stretch="Uniform" Margin="0,0,0,12"/>
-                                    <TextBlock Text="Görselden PDF'e" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Resimlerinizi tek bir PDF belgesine dönüştürün." FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                                    <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{DynamicResource PrimaryBrush}" Width="32" Height="32" Stretch="Uniform" Margin="0,0,0,8"/>
+                                    <TextBlock Text="Görselden PDF'e" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Resimlerinizi tek bir PDF belgesine dönüştürün." FontSize="11" Foreground="{DynamicResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Button>
+                            
+                            <!-- Card 8: Compress -->
+                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="6" Padding="12" Click="CardCompress_Click">
+                                <StackPanel VerticalAlignment="Center">
+                                    <Path Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" Fill="{DynamicResource PrimaryBrush}" Width="32" Height="32" Stretch="Uniform" Margin="0,0,0,8"/>
+                                    <TextBlock Text="PDF Sıkıştır" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="PDF dosyanızın boyutunu optimize edin." FontSize="11" Foreground="{DynamicResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Card 9: Protect -->
+                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="6" Padding="12" Click="CardProtect_Click">
+                                <StackPanel VerticalAlignment="Center">
+                                    <Path Data="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" Fill="{DynamicResource PrimaryBrush}" Width="32" Height="32" Stretch="Uniform" Margin="0,0,0,8"/>
+                                    <TextBlock Text="Şifrele / Çöz" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="PDF belgenize şifre koyun veya şifreyi kaldırın." FontSize="11" Foreground="{DynamicResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Card 10: Page Number -->
+                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="6" Padding="12" Click="CardPageNumber_Click">
+                                <StackPanel VerticalAlignment="Center">
+                                    <Path Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4 12h-2v-4h-2v4H9v-6h6v6z" Fill="{DynamicResource PrimaryBrush}" Width="32" Height="32" Stretch="Uniform" Margin="0,0,0,8"/>
+                                    <TextBlock Text="Numara Ekle" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Sayfalara otomatik olarak sayfa numaraları ekleyin." FontSize="11" Foreground="{DynamicResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Card 11: Extract Text -->
+                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="6" Padding="12" Click="CardExtractText_Click">
+                                <StackPanel VerticalAlignment="Center">
+                                    <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{DynamicResource PrimaryBrush}" Width="32" Height="32" Stretch="Uniform" Margin="0,0,0,8"/>
+                                    <TextBlock Text="Metin Çıkar" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="PDF'in içerisindeki tüm metinleri TXT dosyası olarak dışa aktarın." FontSize="11" Foreground="{DynamicResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Card 12: Extract Image -->
+                            <Button Style="{StaticResource SecondaryButtonStyle}" Margin="6" Padding="12" Click="CardExtractImage_Click">
+                                <StackPanel VerticalAlignment="Center">
+                                    <Path Data="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0-2-.9-2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" Fill="{DynamicResource PrimaryBrush}" Width="32" Height="32" Stretch="Uniform" Margin="0,0,0,8"/>
+                                    <TextBlock Text="Görselleri Çıkar" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="PDF belgesindeki tüm gömülü görselleri klasöre çıkarın." FontSize="11" Foreground="{DynamicResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,4,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Button>
                         </UniformGrid>
 
                         <!-- Global Drag & Drop Panel -->
-                        <Border Grid.Row="2" Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Margin="8" Height="140" AllowDrop="True" Drop="HomeDragDrop_Drop" DragOver="HomeDragDrop_DragOver">
+                        <Border Grid.Row="2" Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Margin="8" Height="140" AllowDrop="True" Drop="HomeDragDrop_Drop" DragOver="HomeDragDrop_DragOver">
                             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <Path Data="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" 
-                                      Fill="{StaticResource PrimaryBrush}" Width="42" Height="42" Stretch="Uniform" Margin="0,0,0,8" HorizontalAlignment="Center"/>
-                                <TextBlock Text="PDF veya Görsellerinizi Buraya Sürükleyip Bırakın" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextLight}" HorizontalAlignment="Center"/>
-                                <TextBlock Text="Dosya türüne göre uygun araca otomatik olarak yönlendirilirsiniz." FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                      Fill="{DynamicResource PrimaryBrush}" Width="42" Height="42" Stretch="Uniform" Margin="0,0,0,8" HorizontalAlignment="Center"/>
+                                <TextBlock Text="PDF veya Görsellerinizi Buraya Sürükleyip Bırakın" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Dosya türüne göre uygun araca otomatik olarak yönlendirilirsiniz." FontSize="11" Foreground="{DynamicResource TextGray}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -436,8 +504,8 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                            <TextBlock Text="PDF Birleştirme" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
-                            <TextBlock Text="Aşağıdaki listeye eklediğiniz PDF dosyalarını sırasıyla tek bir belgede birleştirir." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                            <TextBlock Text="PDF Birleştirme" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextLight}"/>
+                            <TextBlock Text="Aşağıdaki listeye eklediğiniz PDF dosyalarını sırasıyla tek bir belgede birleştirir." FontSize="13" Foreground="{DynamicResource TextGray}" Margin="0,2,0,0"/>
                         </StackPanel>
 
                         <!-- Files list & Actions -->
@@ -447,7 +515,7 @@
                                 <ColumnDefinition Width="160"/>
                             </Grid.ColumnDefinitions>
 
-                            <ListBox x:Name="LstMergeFiles" Background="{StaticResource BackgroundCard}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto" AllowDrop="True" DragOver="MergeList_DragOver" Drop="MergeList_Drop" PreviewMouseLeftButtonDown="List_PreviewMouseLeftButtonDown" MouseMove="List_MouseMove">
+                            <ListBox x:Name="LstMergeFiles" Background="{DynamicResource BackgroundCard}" BorderBrush="{DynamicResource BorderDark}" BorderThickness="1" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto" AllowDrop="True" DragOver="MergeList_DragOver" Drop="MergeList_Drop" PreviewMouseLeftButtonDown="List_PreviewMouseLeftButtonDown" MouseMove="List_MouseMove">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Grid Margin="5" HorizontalAlignment="Stretch" Width="550">
@@ -456,12 +524,12 @@
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{StaticResource PrimaryBrush}" Width="20" Height="20" Stretch="Uniform" Margin="0,0,10,0"/>
+                                            <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{DynamicResource PrimaryBrush}" Width="20" Height="20" Stretch="Uniform" Margin="0,0,10,0"/>
                                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding FileName}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextLight}"/>
-                                                <TextBlock Text="{Binding FilePath}" FontSize="11" Foreground="{StaticResource TextGray}"/>
+                                                <TextBlock Text="{Binding FileName}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextLight}"/>
+                                                <TextBlock Text="{Binding FilePath}" FontSize="11" Foreground="{DynamicResource TextGray}"/>
                                             </StackPanel>
-                                            <TextBlock Grid.Column="2" Text="{Binding PageInfo}" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding PageInfo}" FontSize="12" Foreground="{DynamicResource TextGray}" VerticalAlignment="Center"/>
                                         </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
@@ -476,13 +544,13 @@
                             </StackPanel>
                         </Grid>
 
-                        <Border Grid.Row="2" Background="{StaticResource BackgroundCard}" CornerRadius="8" Padding="15" BorderBrush="{StaticResource BorderDark}" BorderThickness="1">
+                        <Border Grid.Row="2" Background="{DynamicResource BackgroundCard}" CornerRadius="8" Padding="15" BorderBrush="{DynamicResource BorderDark}" BorderThickness="1">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock x:Name="TxtMergeStatus" Text="Listeye en az 2 PDF ekleyin." VerticalAlignment="Center" Foreground="{StaticResource TextGray}"/>
+                                <TextBlock x:Name="TxtMergeStatus" Text="Listeye en az 2 PDF ekleyin." VerticalAlignment="Center" Foreground="{DynamicResource TextGray}"/>
                                 <Button Grid.Column="1" Content="PDF'leri Birleştir" Style="{StaticResource ModernButtonStyle}" Click="BtnMergeAction_Click"/>
                             </Grid>
                         </Border>
@@ -498,8 +566,8 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                            <TextBlock Text="Sayfa Döndürme" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
-                            <TextBlock Text="Belgenizin belirli sayfalarını seçerek saat yönünde döndürün." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                            <TextBlock Text="Sayfa Döndürme" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextLight}"/>
+                            <TextBlock Text="Belgenizin belirli sayfalarını seçerek saat yönünde döndürün." FontSize="13" Foreground="{DynamicResource TextGray}" Margin="0,2,0,0"/>
                         </StackPanel>
 
                         <Grid Grid.Row="1">
@@ -509,13 +577,13 @@
                             </Grid.ColumnDefinitions>
 
                             <!-- Left: File drop area or loaded preview info -->
-                            <Border Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="RotateDrop">
+                            <Border Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="RotateDrop">
                                 <Grid>
                                     <!-- File not loaded state -->
                                     <StackPanel x:Name="PanelRotateNoFile" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{StaticResource BorderDark}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
+                                        <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{DynamicResource BorderDark}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
                                         <Button Content="PDF Seçin" Style="{StaticResource ModernButtonStyle}" Click="BtnSelectRotateFile_Click" HorizontalAlignment="Center"/>
-                                        <TextBlock Text="veya dosyayı buraya sürükleyin" Foreground="{StaticResource TextGray}" FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="veya dosyayı buraya sürükleyin" Foreground="{DynamicResource TextGray}" FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center"/>
                                     </StackPanel>
 
                                     <!-- File loaded state -->
@@ -526,7 +594,7 @@
                                         </Grid.RowDefinitions>
 
                                         <!-- PDF Page Preview -->
-                                        <Border Grid.Row="0" Background="#E5E7EB" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,12">
+                                        <Border Grid.Row="0" Background="#E5E7EB" BorderBrush="{DynamicResource BorderDark}" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,12">
                                             <Image x:Name="ImgRotatePreview" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
 
@@ -535,12 +603,12 @@
                                             <!-- Page Navigation Controls -->
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,8">
                                                 <Button x:Name="BtnRotatePrevPage" Content="◀" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" Margin="0,0,10,0" Click="BtnRotatePrevPage_Click"/>
-                                                <TextBlock x:Name="TxtRotatePageIndicator" Text="Sayfa 1 / 1" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextLight}"/>
+                                                <TextBlock x:Name="TxtRotatePageIndicator" Text="Sayfa 1 / 1" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextLight}"/>
                                                 <Button x:Name="BtnRotateNextPage" Content="▶" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" Margin="10,0,0,0" Click="BtnRotateNextPage_Click"/>
                                             </StackPanel>
 
-                                            <TextBlock x:Name="TxtRotateFileName" Text="file.pdf" FontSize="13" FontWeight="Bold" Foreground="{StaticResource TextLight}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="280" Margin="0,0,0,2"/>
-                                            <TextBlock x:Name="TxtRotateFilePages" Text="Sayfa Sayısı: 12" Foreground="{StaticResource TextGray}" FontSize="11" Margin="0,0,0,8" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="TxtRotateFileName" Text="file.pdf" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="280" Margin="0,0,0,2"/>
+                                            <TextBlock x:Name="TxtRotateFilePages" Text="Sayfa Sayısı: 12" Foreground="{DynamicResource TextGray}" FontSize="11" Margin="0,0,0,8" HorizontalAlignment="Center"/>
                                             <Button Content="Farklı PDF Seç" Style="{StaticResource SecondaryButtonStyle}" Padding="8,4" FontSize="11" Click="BtnSelectRotateFile_Click" HorizontalAlignment="Center"/>
                                         </StackPanel>
                                     </Grid>
@@ -548,17 +616,17 @@
                             </Border>
 
                             <!-- Right: Rotate settings card -->
-                            <Border Grid.Column="1" Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Padding="20">
+                            <Border Grid.Column="1" Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Padding="20">
                                 <StackPanel>
-                                    <TextBlock Text="Döndürme Ayarları" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" Margin="0,0,0,16"/>
+                                    <TextBlock Text="Döndürme Ayarları" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextLight}" Margin="0,0,0,16"/>
 
                                     <!-- Sayfa Seçimi -->
-                                    <TextBlock Text="Sayfa Aralığı" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <TextBlock Foreground="{DynamicResource TextLight}" Text="Sayfa Aralığı" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
                                     <TextBox x:Name="TxtRotatePages" Style="{StaticResource ModernTextBoxStyle}" Text="Hepsi" Margin="0,0,0,4"/>
-                                    <TextBlock Text="Örn: Hepsi, 1, 3-5, 8" FontSize="11" Foreground="{StaticResource TextGray}" Margin="0,0,0,16"/>
+                                    <TextBlock Text="Örn: Hepsi, 1, 3-5, 8" FontSize="11" Foreground="{DynamicResource TextGray}" Margin="0,0,0,16"/>
 
                                     <!-- Açı Seçimi -->
-                                    <TextBlock Text="Döndürme Açısı" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                    <TextBlock Foreground="{DynamicResource TextLight}" Text="Döndürme Açısı" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8"/>
                                     <ComboBox x:Name="CmbRotateAngle" SelectedIndex="0" Margin="0,0,0,24">
                                         <ComboBoxItem Content="90° Saat Yönünde"/>
                                         <ComboBoxItem Content="180°"/>
@@ -582,8 +650,8 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                            <TextBlock Text="Sayfa Silme" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
-                            <TextBlock Text="PDF belgesinden çıkarmak istediğiniz sayfaları seçip yeni belgenizi kaydedin." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                            <TextBlock Text="Sayfa Silme" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextLight}"/>
+                            <TextBlock Text="PDF belgesinden çıkarmak istediğiniz sayfaları seçip yeni belgenizi kaydedin." FontSize="13" Foreground="{DynamicResource TextGray}" Margin="0,2,0,0"/>
                         </StackPanel>
 
                         <Grid Grid.Row="1">
@@ -593,12 +661,12 @@
                             </Grid.ColumnDefinitions>
 
                             <!-- Left: File drop area or loaded preview info -->
-                            <Border Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="DeleteDrop">
+                            <Border Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="DeleteDrop">
                                 <Grid>
                                     <StackPanel x:Name="PanelDeleteNoFile" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{StaticResource BorderDark}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
+                                        <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{DynamicResource BorderDark}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
                                         <Button Content="PDF Seçin" Style="{StaticResource ModernButtonStyle}" Click="BtnSelectDeleteFile_Click" HorizontalAlignment="Center"/>
-                                        <TextBlock Text="veya dosyayı buraya sürükleyin" Foreground="{StaticResource TextGray}" FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="veya dosyayı buraya sürükleyin" Foreground="{DynamicResource TextGray}" FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center"/>
                                     </StackPanel>
 
                                     <!-- File loaded state -->
@@ -609,7 +677,7 @@
                                         </Grid.RowDefinitions>
 
                                         <!-- PDF Page Preview -->
-                                        <Border Grid.Row="0" Background="#E5E7EB" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,12">
+                                        <Border Grid.Row="0" Background="#E5E7EB" BorderBrush="{DynamicResource BorderDark}" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,12">
                                             <Image x:Name="ImgDeletePreview" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
 
@@ -618,12 +686,12 @@
                                             <!-- Page Navigation Controls -->
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,8">
                                                 <Button x:Name="BtnDeletePrevPage" Content="◀" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" Margin="0,0,10,0" Click="BtnDeletePrevPage_Click"/>
-                                                <TextBlock x:Name="TxtDeletePageIndicator" Text="Sayfa 1 / 1" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextLight}"/>
+                                                <TextBlock x:Name="TxtDeletePageIndicator" Text="Sayfa 1 / 1" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextLight}"/>
                                                 <Button x:Name="BtnDeleteNextPage" Content="▶" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" Margin="10,0,0,0" Click="BtnDeleteNextPage_Click"/>
                                             </StackPanel>
 
-                                            <TextBlock x:Name="TxtDeleteFileName" Text="file.pdf" FontSize="13" FontWeight="Bold" Foreground="{StaticResource TextLight}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="280" Margin="0,0,0,2"/>
-                                            <TextBlock x:Name="TxtDeleteFilePages" Text="Sayfa Sayısı: 12" Foreground="{StaticResource TextGray}" FontSize="11" Margin="0,0,0,8" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="TxtDeleteFileName" Text="file.pdf" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="280" Margin="0,0,0,2"/>
+                                            <TextBlock x:Name="TxtDeleteFilePages" Text="Sayfa Sayısı: 12" Foreground="{DynamicResource TextGray}" FontSize="11" Margin="0,0,0,8" HorizontalAlignment="Center"/>
                                             <Button Content="Farklı PDF Seç" Style="{StaticResource SecondaryButtonStyle}" Padding="8,4" FontSize="11" Click="BtnSelectDeleteFile_Click" HorizontalAlignment="Center"/>
                                         </StackPanel>
                                     </Grid>
@@ -631,14 +699,14 @@
                             </Border>
 
                             <!-- Right: Delete settings card -->
-                            <Border Grid.Column="1" Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Padding="20">
+                            <Border Grid.Column="1" Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Padding="20">
                                 <StackPanel>
-                                    <TextBlock Text="Silme Ayarları" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" Margin="0,0,0,16"/>
+                                    <TextBlock Text="Silme Ayarları" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextLight}" Margin="0,0,0,16"/>
 
                                     <!-- Silinecek Sayfalar -->
-                                    <TextBlock Text="Silinecek Sayfa Numaraları" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <TextBlock Foreground="{DynamicResource TextLight}" Text="Silinecek Sayfa Numaraları" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
                                     <TextBox x:Name="TxtDeletePages" Style="{StaticResource ModernTextBoxStyle}" Text="" Margin="0,0,0,4"/>
-                                    <TextBlock Text="Örn: 2, 4, 6-8 (Gereksiz sayfalar)" FontSize="11" Foreground="{StaticResource TextGray}" Margin="0,0,0,24"/>
+                                    <TextBlock Text="Örn: 2, 4, 6-8 (Gereksiz sayfalar)" FontSize="11" Foreground="{DynamicResource TextGray}" Margin="0,0,0,24"/>
 
                                     <!-- Execute button -->
                                     <Button x:Name="BtnDeleteAction" Content="Seçilenleri Sil ve Kaydet" Style="{StaticResource DangerButtonStyle}" Click="BtnDeleteAction_Click" IsEnabled="False"/>
@@ -657,8 +725,8 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                            <TextBlock Text="PDF Bölme" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
-                            <TextBlock Text="PDF belgenizi sayfa aralıklarına göre parçalayın veya tüm sayfaları ayrı ayrı dosyalara bölün." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                            <TextBlock Text="PDF Bölme" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextLight}"/>
+                            <TextBlock Text="PDF belgenizi sayfa aralıklarına göre parçalayın veya tüm sayfaları ayrı ayrı dosyalara bölün." FontSize="13" Foreground="{DynamicResource TextGray}" Margin="0,2,0,0"/>
                         </StackPanel>
 
                         <Grid Grid.Row="1">
@@ -668,12 +736,12 @@
                             </Grid.ColumnDefinitions>
 
                             <!-- Left: File drop area or loaded preview info -->
-                            <Border Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="SplitDrop">
+                            <Border Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="SplitDrop">
                                 <Grid>
                                     <StackPanel x:Name="PanelSplitNoFile" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{StaticResource BorderDark}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
+                                        <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{DynamicResource BorderDark}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
                                         <Button Content="PDF Seçin" Style="{StaticResource ModernButtonStyle}" Click="BtnSelectSplitFile_Click" HorizontalAlignment="Center"/>
-                                        <TextBlock Text="veya dosyayı buraya sürükleyin" Foreground="{StaticResource TextGray}" FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="veya dosyayı buraya sürükleyin" Foreground="{DynamicResource TextGray}" FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center"/>
                                     </StackPanel>
 
                                     <!-- File loaded state -->
@@ -684,7 +752,7 @@
                                         </Grid.RowDefinitions>
 
                                         <!-- PDF Page Preview -->
-                                        <Border Grid.Row="0" Background="#E5E7EB" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,12">
+                                        <Border Grid.Row="0" Background="#E5E7EB" BorderBrush="{DynamicResource BorderDark}" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,12">
                                             <Image x:Name="ImgSplitPreview" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
 
@@ -693,12 +761,12 @@
                                             <!-- Page Navigation Controls -->
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,8">
                                                 <Button x:Name="BtnSplitPrevPage" Content="◀" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" Margin="0,0,10,0" Click="BtnSplitPrevPage_Click"/>
-                                                <TextBlock x:Name="TxtSplitPageIndicator" Text="Sayfa 1 / 1" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextLight}"/>
+                                                <TextBlock x:Name="TxtSplitPageIndicator" Text="Sayfa 1 / 1" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextLight}"/>
                                                 <Button x:Name="BtnSplitNextPage" Content="▶" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" Margin="10,0,0,0" Click="BtnSplitNextPage_Click"/>
                                             </StackPanel>
 
-                                            <TextBlock x:Name="TxtSplitFileName" Text="file.pdf" FontSize="13" FontWeight="Bold" Foreground="{StaticResource TextLight}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="280" Margin="0,0,0,2"/>
-                                            <TextBlock x:Name="TxtSplitFilePages" Text="Sayfa Sayısı: 12" Foreground="{StaticResource TextGray}" FontSize="11" Margin="0,0,0,8" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="TxtSplitFileName" Text="file.pdf" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="280" Margin="0,0,0,2"/>
+                                            <TextBlock x:Name="TxtSplitFilePages" Text="Sayfa Sayısı: 12" Foreground="{DynamicResource TextGray}" FontSize="11" Margin="0,0,0,8" HorizontalAlignment="Center"/>
                                             <Button Content="Farklı PDF Seç" Style="{StaticResource SecondaryButtonStyle}" Padding="8,4" FontSize="11" Click="BtnSelectSplitFile_Click" HorizontalAlignment="Center"/>
                                         </StackPanel>
                                     </Grid>
@@ -706,22 +774,22 @@
                             </Border>
 
                             <!-- Right: Split settings card -->
-                            <Border Grid.Column="1" Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Padding="20">
+                            <Border Grid.Column="1" Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Padding="20">
                                 <StackPanel>
-                                    <TextBlock Text="Bölme Ayarları" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" Margin="0,0,0,16"/>
+                                    <TextBlock Text="Bölme Ayarları" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextLight}" Margin="0,0,0,16"/>
 
                                     <!-- Bölme Modu -->
-                                    <RadioButton x:Name="RadioSplitExtract" Content="Belirli Sayfaları Ayıkla" IsChecked="true" FontWeight="SemiBold" Margin="0,0,0,10" Checked="SplitMode_Changed"/>
+                                    <RadioButton Foreground="{DynamicResource TextLight}" x:Name="RadioSplitExtract" Content="Belirli Sayfaları Ayıkla" IsChecked="true" FontWeight="SemiBold" Margin="0,0,0,10" Checked="SplitMode_Changed"/>
                                     
                                     <!-- Ayıklanacak Sayfalar Grubu -->
                                     <StackPanel x:Name="PanelSplitExtractSettings" Margin="16,0,0,16" Visibility="Visible">
-                                        <TextBlock Text="Ayıklanacak Sayfa Numaraları" FontSize="12" Foreground="{StaticResource TextGray}" Margin="0,0,0,6"/>
+                                        <TextBlock Text="Ayıklanacak Sayfa Numaraları" FontSize="12" Foreground="{DynamicResource TextGray}" Margin="0,0,0,6"/>
                                         <TextBox x:Name="TxtSplitPages" Style="{StaticResource ModernTextBoxStyle}" Text="1-3" Margin="0,0,0,4"/>
-                                        <TextBlock Text="Örn: 1-3, 5, 8-10" FontSize="11" Foreground="{StaticResource TextGray}"/>
-                                        <CheckBox x:Name="ChkSplitExtractIndividually" Content="Seçilen sayfaları ayrı ayrı PDF olarak ayıkla" Margin="0,10,0,0" FontSize="12" Foreground="{StaticResource TextLight}"/>
+                                        <TextBlock Text="Örn: 1-3, 5, 8-10" FontSize="11" Foreground="{DynamicResource TextGray}"/>
+                                        <CheckBox x:Name="ChkSplitExtractIndividually" Content="Seçilen sayfaları ayrı ayrı PDF olarak ayıkla" Margin="0,10,0,0" FontSize="12" Foreground="{DynamicResource TextLight}"/>
                                     </StackPanel>
 
-                                    <RadioButton x:Name="RadioSplitAll" Content="Her Sayfayı Ayrı PDF Yap" FontWeight="SemiBold" Margin="0,0,0,20" Checked="SplitMode_Changed"/>
+                                    <RadioButton Foreground="{DynamicResource TextLight}" x:Name="RadioSplitAll" Content="Her Sayfayı Ayrı PDF Yap" FontWeight="SemiBold" Margin="0,0,0,20" Checked="SplitMode_Changed"/>
 
                                     <!-- Execute button -->
                                     <Button x:Name="BtnSplitAction" Content="PDF'i Böl ve Kaydet" Style="{StaticResource ModernButtonStyle}" Click="BtnSplitAction_Click" IsEnabled="False"/>
@@ -740,8 +808,8 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                            <TextBlock Text="Filigran Ekleme" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
-                            <TextBlock Text="Belgenize metin veya resim biçiminde filigranlar (logo/damga) uygulayın." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                            <TextBlock Text="Filigran Ekleme" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextLight}"/>
+                            <TextBlock Text="Belgenize metin veya resim biçiminde filigranlar (logo/damga) uygulayın." FontSize="13" Foreground="{DynamicResource TextGray}" Margin="0,2,0,0"/>
                         </StackPanel>
 
                         <Grid Grid.Row="1">
@@ -751,25 +819,25 @@
                             </Grid.ColumnDefinitions>
 
                             <!-- Left: File drop area or loaded preview info -->
-                            <Border Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Margin="0,0,16,0" Padding="20">
+                            <Border Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Margin="0,0,16,0" Padding="20">
                                 <Grid>
                                     <StackPanel x:Name="PanelWatermarkNoFile" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{StaticResource BorderDark}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
+                                        <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{DynamicResource BorderDark}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
                                         <Button Content="PDF Seçin" Style="{StaticResource ModernButtonStyle}" Click="BtnSelectWatermarkFile_Click" HorizontalAlignment="Center"/>
-                                        <TextBlock Text="veya dosyayı buraya sürükleyin" Foreground="{StaticResource TextGray}" FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="veya dosyayı buraya sürükleyin" Foreground="{DynamicResource TextGray}" FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center"/>
                                     </StackPanel>
 
                                     <StackPanel x:Name="PanelWatermarkFileLoaded" Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{StaticResource PrimaryBrush}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
-                                        <TextBlock x:Name="TxtWatermarkFileName" Text="file.pdf" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="300"/>
-                                        <TextBlock x:Name="TxtWatermarkFilePages" Text="Sayfa Sayısı: 12" Foreground="{StaticResource TextGray}" FontSize="13" Margin="0,4,0,12" HorizontalAlignment="Center"/>
+                                        <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{DynamicResource PrimaryBrush}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
+                                        <TextBlock x:Name="TxtWatermarkFileName" Text="file.pdf" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="300"/>
+                                        <TextBlock x:Name="TxtWatermarkFilePages" Text="Sayfa Sayısı: 12" Foreground="{DynamicResource TextGray}" FontSize="13" Margin="0,4,0,12" HorizontalAlignment="Center"/>
                                         <Button Content="Farklı PDF Seç" Style="{StaticResource SecondaryButtonStyle}" Click="BtnSelectWatermarkFile_Click" HorizontalAlignment="Center"/>
                                     </StackPanel>
                                 </Grid>
                             </Border>
 
                             <!-- Right: Watermark settings card -->
-                            <Border Grid.Column="1" Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Padding="20">
+                            <Border Grid.Column="1" Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Padding="20">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -778,32 +846,32 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Row="0" Text="Filigran Ayarları" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" Margin="0,0,0,12"/>
+                                    <TextBlock Grid.Row="0" Text="Filigran Ayarları" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextLight}" Margin="0,0,0,12"/>
 
                                     <!-- Metin / Görsel Tab Selector -->
                                     <UniformGrid Grid.Row="1" Columns="2" Margin="0,0,0,16">
-                                        <RadioButton x:Name="RadioTextWatermark" Content="Metin Filigranı" IsChecked="true" Style="{StaticResource SidebarButtonStyle}" Height="35" Checked="WatermarkType_Changed"/>
-                                        <RadioButton x:Name="RadioImageWatermark" Content="Resim Filigranı" Style="{StaticResource SidebarButtonStyle}" Height="35" Checked="WatermarkType_Changed"/>
+                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="RadioTextWatermark" Content="Metin Filigranı" IsChecked="true" Style="{StaticResource SidebarButtonStyle}" Height="35" Checked="WatermarkType_Changed"/>
+                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="RadioImageWatermark" Content="Resim Filigranı" Style="{StaticResource SidebarButtonStyle}" Height="35" Checked="WatermarkType_Changed"/>
                                     </UniformGrid>
 
                                     <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="0,0,0,12">
                                         <Grid>
                                             <!-- Metin Filigranı Ayarları -->
                                             <StackPanel x:Name="PanelTextWatermarkSettings" Visibility="Visible">
-                                                <TextBlock Text="Filigran Metni" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                                <TextBlock Foreground="{DynamicResource TextLight}" Text="Filigran Metni" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
                                                 <TextBox x:Name="TxtWatermarkText" Style="{StaticResource ModernTextBoxStyle}" Text="KOPYA" Margin="0,0,0,12"/>
 
-                                                <TextBlock Text="Yazı Tipi Boyutu" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                                <TextBlock Foreground="{DynamicResource TextLight}" Text="Yazı Tipi Boyutu" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
                                                 <Grid Margin="0,0,0,12">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="*"/>
                                                         <ColumnDefinition Width="40"/>
                                                     </Grid.ColumnDefinitions>
                                                     <Slider x:Name="SliderWTextFontSize" Minimum="12" Maximum="144" Value="60" TickFrequency="1" IsSnapToTickEnabled="True"/>
-                                                    <TextBlock Grid.Column="1" Text="{Binding ElementName=SliderWTextFontSize, Path=Value}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12" Foreground="{StaticResource TextLight}"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding ElementName=SliderWTextFontSize, Path=Value}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12" Foreground="{DynamicResource TextLight}"/>
                                                 </Grid>
 
-                                                <TextBlock Text="Renk" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                                <TextBlock Foreground="{DynamicResource TextLight}" Text="Renk" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
                                                 <ComboBox x:Name="CmbWatermarkColor" SelectedIndex="0" Margin="0,0,0,12">
                                                     <ComboBoxItem Content="Kırmızı (Varsayılan)" Tag="#EF4444"/>
                                                     <ComboBoxItem Content="Siyah" Tag="#000000"/>
@@ -815,7 +883,7 @@
 
                                             <!-- Görsel Filigranı Ayarları -->
                                             <StackPanel x:Name="PanelImageWatermarkSettings" Visibility="Collapsed">
-                                                <TextBlock Text="Resim Dosyası" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                                <TextBlock Foreground="{DynamicResource TextLight}" Text="Resim Dosyası" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
                                                 <Grid Margin="0,0,0,8">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="*"/>
@@ -825,17 +893,17 @@
                                                     <Button Grid.Column="1" Content="Seç" Style="{StaticResource SecondaryButtonStyle}" Padding="10,6" Click="BtnSelectWatermarkImage_Click"/>
                                                 </Grid>
 
-                                                <TextBlock Text="Ölçek (%)" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                                <TextBlock Foreground="{DynamicResource TextLight}" Text="Ölçek (%)" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
                                                 <Grid Margin="0,0,0,12">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="*"/>
                                                         <ColumnDefinition Width="50"/>
                                                     </Grid.ColumnDefinitions>
                                                     <Slider x:Name="SliderWImageScale" Minimum="5" Maximum="200" Value="50" TickFrequency="5" IsSnapToTickEnabled="True"/>
-                                                    <TextBlock Grid.Column="1" Text="{Binding ElementName=SliderWImageScale, Path=Value, StringFormat={}{0}%}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12" Foreground="{StaticResource TextLight}"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding ElementName=SliderWImageScale, Path=Value, StringFormat={}{0}%}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12" Foreground="{DynamicResource TextLight}"/>
                                                 </Grid>
 
-                                                <TextBlock Text="Konum" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                                <TextBlock Foreground="{DynamicResource TextLight}" Text="Konum" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
                                                 <ComboBox x:Name="CmbWatermarkPosition" SelectedIndex="0" Margin="0,0,0,12">
                                                     <ComboBoxItem Content="Orta (Merkez)" Tag="Center"/>
                                                     <ComboBoxItem Content="Sol Üst" Tag="TopLeft"/>
@@ -848,26 +916,26 @@
                                     </ScrollViewer>
 
                                     <!-- Ortak Ayarlar (Opaklık ve Döndürme) -->
-                                    <Border Grid.Row="3" BorderBrush="{StaticResource BorderDark}" BorderThickness="0,1,0,0" Padding="0,12,0,0">
+                                    <Border Grid.Row="3" BorderBrush="{DynamicResource BorderDark}" BorderThickness="0,1,0,0" Padding="0,12,0,0">
                                         <StackPanel>
-                                            <TextBlock Text="Opaklık (Şeffaflık)" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                            <TextBlock Foreground="{DynamicResource TextLight}" Text="Opaklık (Şeffaflık)" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
                                             <Grid Margin="0,0,0,12">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="50"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Slider x:Name="SliderWatermarkOpacity" Minimum="0.05" Maximum="1.0" Value="0.3" TickFrequency="0.05" IsSnapToTickEnabled="True"/>
-                                                <TextBlock Grid.Column="1" Text="{Binding ElementName=SliderWatermarkOpacity, Path=Value, StringFormat={}{0:P0}}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12" Foreground="{StaticResource TextLight}"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding ElementName=SliderWatermarkOpacity, Path=Value, StringFormat={}{0:P0}}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12" Foreground="{DynamicResource TextLight}"/>
                                             </Grid>
 
-                                            <TextBlock Text="Döndürme Açısı (°)" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                            <TextBlock Foreground="{DynamicResource TextLight}" Text="Döndürme Açısı (°)" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
                                             <Grid Margin="0,0,0,20">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="50"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Slider x:Name="SliderWatermarkAngle" Minimum="-180" Maximum="180" Value="-45" TickFrequency="5" IsSnapToTickEnabled="True"/>
-                                                <TextBlock Grid.Column="1" Text="{Binding ElementName=SliderWatermarkAngle, Path=Value, StringFormat={}{0}°}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12" Foreground="{StaticResource TextLight}"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding ElementName=SliderWatermarkAngle, Path=Value, StringFormat={}{0}°}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12" Foreground="{DynamicResource TextLight}"/>
                                             </Grid>
 
                                             <Button x:Name="BtnWatermarkAction" Content="Filigran Ekle ve Kaydet" Style="{StaticResource ModernButtonStyle}" Click="BtnWatermarkAction_Click" IsEnabled="False"/>
@@ -888,8 +956,8 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                            <TextBlock Text="PDF'i Görsele Dönüştürme" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
-                            <TextBlock Text="Belgenizin her sayfasını ayrı bir resim dosyası (PNG veya JPG) olarak dışa aktarın." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                            <TextBlock Text="PDF'i Görsele Dönüştürme" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextLight}"/>
+                            <TextBlock Text="Belgenizin her sayfasını ayrı bir resim dosyası (PNG veya JPG) olarak dışa aktarın." FontSize="13" Foreground="{DynamicResource TextGray}" Margin="0,2,0,0"/>
                         </StackPanel>
 
                         <Grid Grid.Row="1">
@@ -899,30 +967,30 @@
                             </Grid.ColumnDefinitions>
 
                             <!-- Left: File drop area or loaded preview info -->
-                            <Border Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Margin="0,0,16,0" Padding="20">
+                            <Border Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Margin="0,0,16,0" Padding="20">
                                 <Grid>
                                     <StackPanel x:Name="PanelToImageNoFile" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{StaticResource BorderDark}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
+                                        <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{DynamicResource BorderDark}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
                                         <Button Content="PDF Seçin" Style="{StaticResource ModernButtonStyle}" Click="BtnSelectToImageFile_Click" HorizontalAlignment="Center"/>
-                                        <TextBlock Text="veya dosyayı buraya sürükleyin" Foreground="{StaticResource TextGray}" FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="veya dosyayı buraya sürükleyin" Foreground="{DynamicResource TextGray}" FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center"/>
                                     </StackPanel>
 
                                     <StackPanel x:Name="PanelToImageFileLoaded" Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{StaticResource PrimaryBrush}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
-                                        <TextBlock x:Name="TxtToImageFileName" Text="file.pdf" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="300"/>
-                                        <TextBlock x:Name="TxtToImageFilePages" Text="Sayfa Sayısı: 12" Foreground="{StaticResource TextGray}" FontSize="13" Margin="0,4,0,12" HorizontalAlignment="Center"/>
+                                        <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{DynamicResource PrimaryBrush}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
+                                        <TextBlock x:Name="TxtToImageFileName" Text="file.pdf" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="300"/>
+                                        <TextBlock x:Name="TxtToImageFilePages" Text="Sayfa Sayısı: 12" Foreground="{DynamicResource TextGray}" FontSize="13" Margin="0,4,0,12" HorizontalAlignment="Center"/>
                                         <Button Content="Farklı PDF Seç" Style="{StaticResource SecondaryButtonStyle}" Click="BtnSelectToImageFile_Click" HorizontalAlignment="Center"/>
                                     </StackPanel>
                                 </Grid>
                             </Border>
 
                             <!-- Right: Image export settings card -->
-                            <Border Grid.Column="1" Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Padding="20">
+                            <Border Grid.Column="1" Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Padding="20">
                                 <StackPanel>
-                                    <TextBlock Text="Görsel Ayarları" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" Margin="0,0,0,16"/>
+                                    <TextBlock Text="Görsel Ayarları" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextLight}" Margin="0,0,0,16"/>
 
                                     <!-- Çözünürlük (DPI) -->
-                                    <TextBlock Text="Çözünürlük (DPI)" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <TextBlock Foreground="{DynamicResource TextLight}" Text="Çözünürlük (DPI)" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
                                     <ComboBox x:Name="CmbToImageDpi" SelectedIndex="1" Margin="0,0,0,16">
                                         <ComboBoxItem Content="96 DPI (Düşük/Ekran)" Tag="96"/>
                                         <ComboBoxItem Content="150 DPI (Önerilen/Hızlı)" Tag="150"/>
@@ -930,14 +998,14 @@
                                     </ComboBox>
 
                                     <!-- Format -->
-                                    <TextBlock Text="Görsel Formatı" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <TextBlock Foreground="{DynamicResource TextLight}" Text="Görsel Formatı" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
                                     <ComboBox x:Name="CmbToImageFormat" SelectedIndex="0" Margin="0,0,0,16">
                                         <ComboBoxItem Content="PNG (Kayıpsız / Şeffaflık)" Tag="PNG"/>
                                         <ComboBoxItem Content="JPEG (Küçük Boyut)" Tag="JPEG"/>
                                     </ComboBox>
 
                                     <!-- Çıktı Klasörü -->
-                                    <TextBlock Text="Kayıt Klasörü" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <TextBlock Foreground="{DynamicResource TextLight}" Text="Kayıt Klasörü" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
                                     <Grid Margin="0,0,0,24">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
@@ -965,8 +1033,8 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                            <TextBlock Text="Görsellerden PDF Oluşturma" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
-                            <TextBlock Text="Resim dosyalarını (PNG, JPG, BMP) seçin ve bunları tek bir PDF belgesi olarak derleyin." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                            <TextBlock Text="Görsellerden PDF Oluşturma" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextLight}"/>
+                            <TextBlock Text="Resim dosyalarını (PNG, JPG, BMP) seçin ve bunları tek bir PDF belgesi olarak derleyin." FontSize="13" Foreground="{DynamicResource TextGray}" Margin="0,2,0,0"/>
                         </StackPanel>
 
                         <!-- Files list & Actions -->
@@ -976,7 +1044,7 @@
                                 <ColumnDefinition Width="160"/>
                             </Grid.ColumnDefinitions>
 
-                            <ListBox x:Name="LstToPdfFiles" Background="{StaticResource BackgroundCard}" BorderBrush="{StaticResource BorderDark}" BorderThickness="1" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto" AllowDrop="True" DragOver="ToPdfList_DragOver" Drop="ToPdfList_Drop" PreviewMouseLeftButtonDown="List_PreviewMouseLeftButtonDown" MouseMove="List_MouseMove">
+                            <ListBox x:Name="LstToPdfFiles" Background="{DynamicResource BackgroundCard}" BorderBrush="{DynamicResource BorderDark}" BorderThickness="1" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto" AllowDrop="True" DragOver="ToPdfList_DragOver" Drop="ToPdfList_Drop" PreviewMouseLeftButtonDown="List_PreviewMouseLeftButtonDown" MouseMove="List_MouseMove">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Grid Margin="5" HorizontalAlignment="Stretch" Width="550">
@@ -984,10 +1052,10 @@
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
-                                            <Path Data="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0-2-.9-2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" Fill="{StaticResource PrimaryBrush}" Width="20" Height="20" Stretch="Uniform" Margin="0,0,10,0"/>
+                                            <Path Data="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0-2-.9-2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" Fill="{DynamicResource PrimaryBrush}" Width="20" Height="20" Stretch="Uniform" Margin="0,0,10,0"/>
                                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding FileName}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextLight}"/>
-                                                <TextBlock Text="{Binding FilePath}" FontSize="11" Foreground="{StaticResource TextGray}"/>
+                                                <TextBlock Text="{Binding FileName}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextLight}"/>
+                                                <TextBlock Text="{Binding FilePath}" FontSize="11" Foreground="{DynamicResource TextGray}"/>
                                             </StackPanel>
                                         </Grid>
                                     </DataTemplate>
@@ -1003,13 +1071,13 @@
                             </StackPanel>
                         </Grid>
 
-                        <Border Grid.Row="2" Background="{StaticResource BackgroundCard}" CornerRadius="8" Padding="15" BorderBrush="{StaticResource BorderDark}" BorderThickness="1">
+                        <Border Grid.Row="2" Background="{DynamicResource BackgroundCard}" CornerRadius="8" Padding="15" BorderBrush="{DynamicResource BorderDark}" BorderThickness="1">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock x:Name="TxtToPdfStatus" Text="Listeye en az 1 görsel ekleyin." VerticalAlignment="Center" Foreground="{StaticResource TextGray}"/>
+                                <TextBlock x:Name="TxtToPdfStatus" Text="Listeye en az 1 görsel ekleyin." VerticalAlignment="Center" Foreground="{DynamicResource TextGray}"/>
                                 <Button Grid.Column="1" Content="PDF'e Dönüştür" Style="{StaticResource ModernButtonStyle}" Click="BtnToPdfAction_Click"/>
                             </Grid>
                         </Border>
@@ -1025,33 +1093,30 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                            <TextBlock Text="PDF Sıkıştırma" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
-                            <TextBlock Text="PDF dosyanızın boyutunu optimize edin." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                            <TextBlock Text="PDF Sıkıştırma" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextLight}"/>
+                            <TextBlock Text="PDF dosyanızın boyutunu optimize edin." FontSize="13" Foreground="{DynamicResource TextGray}" Margin="0,2,0,0"/>
                         </StackPanel>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="320"/>
                             </Grid.ColumnDefinitions>
-                            <Border Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="CompressDrop">
-                                <StackPanel VerticalAlignment="Center">
-                                    <Button Content="PDF Seçin" Style="{StaticResource ModernButtonStyle}" Click="BtnSelectCompressFile_Click" HorizontalAlignment="Center"/>
-                                    <TextBlock x:Name="TxtCompressFileName" Text="Dosya seçilmedi" Foreground="{StaticResource TextGray}" Margin="0,10,0,0" HorizontalAlignment="Center"/>
-                                </StackPanel>
+                            <Border Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="CompressDrop">
+                                <controls:FilePreviewControl x:Name="PreviewCompressFile" FileSelectRequested="BtnSelectCompressFile_Click"/>
                             </Border>
-                            <Border Grid.Column="1" Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Padding="20">
+                            <Border Grid.Column="1" Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Padding="20">
                                 <StackPanel>
-                                    <TextBlock Text="Sıkıştırma Ayarları" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextLight}" Margin="0,0,0,16"/>
+                                    <TextBlock Text="Sıkıştırma Ayarları" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextLight}" Margin="0,0,0,16"/>
                                     
-                                    <TextBlock Text="Sıkıştırma Seviyesi" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <TextBlock Foreground="{DynamicResource TextLight}" Text="Sıkıştırma Seviyesi" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
                                     <ComboBox x:Name="CmbCompressLevel" SelectedIndex="2" Margin="0,0,0,12">
                                         <ComboBoxItem Content="Hızlı (Düşük Sıkıştırma)"/>
                                         <ComboBoxItem Content="Normal"/>
                                         <ComboBoxItem Content="En İyi (Yüksek Sıkıştırma)"/>
                                     </ComboBox>
 
-                                    <CheckBox x:Name="ChkCompressImages" Content="Görselleri Sıkıştır (JPEG)" IsChecked="True" Margin="0,0,0,8"/>
-                                    <CheckBox x:Name="ChkCompressStreams" Content="Metinleri/İçeriği Sıkıştır" IsChecked="True" Margin="0,0,0,24"/>
+                                    <CheckBox Foreground="{DynamicResource TextLight}" x:Name="ChkCompressImages" Content="Görselleri Sıkıştır (JPEG)" IsChecked="True" Margin="0,0,0,8"/>
+                                    <CheckBox Foreground="{DynamicResource TextLight}" x:Name="ChkCompressStreams" Content="Metinleri/İçeriği Sıkıştır" IsChecked="True" Margin="0,0,0,24"/>
 
                                     <Button x:Name="BtnCompressAction" Content="Sıkıştır ve Kaydet" Style="{StaticResource ModernButtonStyle}" Click="BtnCompressAction_Click" IsEnabled="False"/>
                                 </StackPanel>
@@ -1065,25 +1130,22 @@
                     <Grid>
                         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                            <TextBlock Text="Şifrele / Çöz" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
-                            <TextBlock Text="PDF dosyasına parola koyun veya kaldırın." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                            <TextBlock Text="Şifrele / Çöz" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextLight}"/>
+                            <TextBlock Text="PDF dosyasına parola koyun veya kaldırın." FontSize="13" Foreground="{DynamicResource TextGray}" Margin="0,2,0,0"/>
                         </StackPanel>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="320"/></Grid.ColumnDefinitions>
-                            <Border Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="ProtectDrop">
-                                <StackPanel VerticalAlignment="Center">
-                                    <Button Content="PDF Seçin" Style="{StaticResource ModernButtonStyle}" Click="BtnSelectProtectFile_Click" HorizontalAlignment="Center"/>
-                                    <TextBlock x:Name="TxtProtectFileName" Text="Dosya seçilmedi" Foreground="{StaticResource TextGray}" Margin="0,10,0,0" HorizontalAlignment="Center"/>
-                                </StackPanel>
+                            <Border Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="ProtectDrop">
+                                <controls:FilePreviewControl x:Name="PreviewProtectFile" FileSelectRequested="BtnSelectProtectFile_Click"/>
                             </Border>
-                            <Border Grid.Column="1" Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Padding="20">
+                            <Border Grid.Column="1" Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Padding="20">
                                 <StackPanel>
-                                    <TextBlock Text="İşlem Türü" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <TextBlock Foreground="{DynamicResource TextLight}" Text="İşlem Türü" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
                                     <ComboBox x:Name="CmbProtectAction" SelectedIndex="0" Margin="0,0,0,12">
                                         <ComboBoxItem Content="Şifre Ekle"/>
                                         <ComboBoxItem Content="Şifre Kaldır"/>
                                     </ComboBox>
-                                    <TextBlock Text="Şifre (Açılış/Sahip)" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <TextBlock Foreground="{DynamicResource TextLight}" Text="Şifre (Açılış/Sahip)" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
                                     <TextBox x:Name="TxtProtectPassword" Style="{StaticResource ModernTextBoxStyle}" Margin="0,0,0,24"/>
                                     <Button x:Name="BtnProtectAction" Content="Uygula ve Kaydet" Style="{StaticResource ModernButtonStyle}" Click="BtnProtectAction_Click" IsEnabled="False"/>
                                 </StackPanel>
@@ -1097,40 +1159,66 @@
                     <Grid>
                         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                            <TextBlock Text="Sayfa Numarası Ekle" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
-                            <TextBlock Text="PDF sayfalarının alt kısmına sayfa numarası ekleyin." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                            <TextBlock Text="Sayfa Numarası Ekle" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextLight}"/>
+                            <TextBlock Text="PDF sayfalarının alt kısmına sayfa numarası ekleyin." FontSize="13" Foreground="{DynamicResource TextGray}" Margin="0,2,0,0"/>
                         </StackPanel>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="320"/></Grid.ColumnDefinitions>
-                            <Border Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="PageNumberDrop">
-                                <StackPanel VerticalAlignment="Center">
-                                    <Button Content="PDF Seçin" Style="{StaticResource ModernButtonStyle}" Click="BtnSelectPageNumberFile_Click" HorizontalAlignment="Center"/>
-                                    <TextBlock x:Name="TxtPageNumberFileName" Text="Dosya seçilmedi" Foreground="{StaticResource TextGray}" Margin="0,10,0,0" HorizontalAlignment="Center"/>
-                                </StackPanel>
+                            <Border Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="PageNumberDrop">
+                                <controls:FilePreviewControl x:Name="PreviewPageNumberFile" FileSelectRequested="BtnSelectPageNumberFile_Click"/>
                             </Border>
-                            <Border Grid.Column="1" Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Padding="20">
+                            <Border Grid.Column="1" Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Padding="20">
                                 <StackPanel>
-                                    <TextBlock Text="Format" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <TextBlock Foreground="{DynamicResource TextLight}" Text="Format" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
                                     <TextBox x:Name="TxtPageNumberFormat" Style="{StaticResource ModernTextBoxStyle}" Text="Sayfa {0} / {1}" Margin="0,0,0,12"/>
                                     
-                                    <TextBlock Text="Konum" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                                    <ComboBox x:Name="CmbPageNumberPosition" SelectedIndex="1" Margin="0,0,0,12">
-                                        <ComboBoxItem Content="Sol Alt"/>
-                                        <ComboBoxItem Content="Orta Alt"/>
-                                        <ComboBoxItem Content="Sağ Alt"/>
-                                        <ComboBoxItem Content="Sol Üst"/>
-                                        <ComboBoxItem Content="Orta Üst"/>
-                                        <ComboBoxItem Content="Sağ Üst"/>
+                                    <TextBlock Foreground="{DynamicResource TextLight}" Text="Yazı Tipi" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <ComboBox x:Name="CmbPageNumberFont" SelectedIndex="0" Margin="0,0,0,12">
+                                        <ComboBoxItem Content="Arial"/>
+                                        <ComboBoxItem Content="Times New Roman"/>
+                                        <ComboBoxItem Content="Courier New"/>
+                                        <ComboBoxItem Content="Verdana"/>
+                                        <ComboBoxItem Content="Calibri"/>
+                                        <ComboBoxItem Content="Tahoma"/>
                                     </ComboBox>
                                     
-                                    <TextBlock Text="Büyüklük (Punto)" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <TextBlock Foreground="{DynamicResource TextLight}" Text="Konum" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <Grid Margin="0,0,0,12" Width="120" HorizontalAlignment="Left">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="30"/>
+                                            <RowDefinition Height="30"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosTL" Grid.Row="0" Grid.Column="0" Content="↖" Style="{StaticResource PositionToggleStyle}"/>
+                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosTC" Grid.Row="0" Grid.Column="1" Content="↑" Style="{StaticResource PositionToggleStyle}"/>
+                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosTR" Grid.Row="0" Grid.Column="2" Content="↗" Style="{StaticResource PositionToggleStyle}"/>
+                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosBL" Grid.Row="1" Grid.Column="0" Content="↙" Style="{StaticResource PositionToggleStyle}"/>
+                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosBC" Grid.Row="1" Grid.Column="1" Content="↓" IsChecked="True" Style="{StaticResource PositionToggleStyle}"/>
+                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosBR" Grid.Row="1" Grid.Column="2" Content="↘" Style="{StaticResource PositionToggleStyle}"/>
+                                    </Grid>
+                                    
+                                    <TextBlock Foreground="{DynamicResource TextLight}" Text="Mesafe (Kenar Boşluğu)" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Slider x:Name="SldPageNumberMargin" Minimum="0" Maximum="100" Value="20" TickFrequency="5" IsSnapToTickEnabled="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                        <TextBlock Foreground="{DynamicResource TextLight}" Grid.Column="1" Text="{Binding ElementName=SldPageNumberMargin, Path=Value}" VerticalAlignment="Center" Width="20" TextAlignment="Right"/>
+                                    </Grid>
+                                    
+                                    <TextBlock Foreground="{DynamicResource TextLight}" Text="Büyüklük (Punto)" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
                                     <Grid Margin="0,0,0,24">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         <Slider x:Name="SldPageNumberSize" Minimum="6" Maximum="48" Value="10" TickFrequency="1" IsSnapToTickEnabled="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                        <TextBlock Grid.Column="1" Text="{Binding ElementName=SldPageNumberSize, Path=Value}" VerticalAlignment="Center" Width="20" TextAlignment="Right"/>
+                                        <TextBlock Foreground="{DynamicResource TextLight}" Grid.Column="1" Text="{Binding ElementName=SldPageNumberSize, Path=Value}" VerticalAlignment="Center" Width="20" TextAlignment="Right"/>
                                     </Grid>
 
                                     <Button x:Name="BtnPageNumberAction" Content="Numara Ekle ve Kaydet" Style="{StaticResource ModernButtonStyle}" Click="BtnPageNumberAction_Click" IsEnabled="False"/>
@@ -1145,18 +1233,15 @@
                     <Grid>
                         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                            <TextBlock Text="Metin Çıkarma" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
-                            <TextBlock Text="PDF içerisindeki tüm metni bir TXT dosyasına aktarın." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                            <TextBlock Text="Metin Çıkarma" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextLight}"/>
+                            <TextBlock Text="PDF içerisindeki tüm metni bir TXT dosyasına aktarın." FontSize="13" Foreground="{DynamicResource TextGray}" Margin="0,2,0,0"/>
                         </StackPanel>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="320"/></Grid.ColumnDefinitions>
-                            <Border Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="ExtractTextDrop">
-                                <StackPanel VerticalAlignment="Center">
-                                    <Button Content="PDF Seçin" Style="{StaticResource ModernButtonStyle}" Click="BtnSelectExtractTextFile_Click" HorizontalAlignment="Center"/>
-                                    <TextBlock x:Name="TxtExtractTextFileName" Text="Dosya seçilmedi" Foreground="{StaticResource TextGray}" Margin="0,10,0,0" HorizontalAlignment="Center"/>
-                                </StackPanel>
+                            <Border Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="ExtractTextDrop">
+                                <controls:FilePreviewControl x:Name="PreviewExtractTextFile" FileSelectRequested="BtnSelectExtractTextFile_Click"/>
                             </Border>
-                            <Border Grid.Column="1" Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Padding="20">
+                            <Border Grid.Column="1" Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Padding="20">
                                 <StackPanel>
                                     <Button x:Name="BtnExtractTextAction" Content="Metni Çıkar (.txt)" Style="{StaticResource ModernButtonStyle}" Click="BtnExtractTextAction_Click" IsEnabled="False"/>
                                 </StackPanel>
@@ -1170,21 +1255,18 @@
                     <Grid>
                         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                            <TextBlock Text="Görsel Çıkarma" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextLight}"/>
-                            <TextBlock Text="PDF içerisine gömülü olan görselleri topluca klasöre çıkarın." FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,2,0,0"/>
+                            <TextBlock Text="Görsel Çıkarma" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextLight}"/>
+                            <TextBlock Text="PDF içerisine gömülü olan görselleri topluca klasöre çıkarın." FontSize="13" Foreground="{DynamicResource TextGray}" Margin="0,2,0,0"/>
                         </StackPanel>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="320"/></Grid.ColumnDefinitions>
-                            <Border Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="ExtractImageDrop">
-                                <StackPanel VerticalAlignment="Center">
-                                    <Button Content="PDF Seçin" Style="{StaticResource ModernButtonStyle}" Click="BtnSelectExtractImageFile_Click" HorizontalAlignment="Center"/>
-                                    <TextBlock x:Name="TxtExtractImageFileName" Text="Dosya seçilmedi" Foreground="{StaticResource TextGray}" Margin="0,10,0,0" HorizontalAlignment="Center"/>
-                                </StackPanel>
+                            <Border Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="ExtractImageDrop">
+                                <controls:FilePreviewControl x:Name="PreviewExtractImageFile" FileSelectRequested="BtnSelectExtractImageFile_Click"/>
                             </Border>
-                            <Border Grid.Column="1" Background="{StaticResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource BorderDark}" Padding="20">
+                            <Border Grid.Column="1" Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Padding="20">
                                 <StackPanel>
-                                    <RadioButton x:Name="RbExtractImagesAll" Content="Tüm görselleri çıkar" IsChecked="True" Margin="0,0,0,8"/>
-                                    <RadioButton x:Name="RbExtractImagesUnique" Content="Sadece benzersiz görselleri çıkar" Margin="0,0,0,16"/>
+                                    <RadioButton Foreground="{DynamicResource TextLight}" x:Name="RbExtractImagesAll" Content="Tüm görselleri çıkar" IsChecked="True" Margin="0,0,0,8"/>
+                                    <RadioButton Foreground="{DynamicResource TextLight}" x:Name="RbExtractImagesUnique" Content="Sadece benzersiz görselleri çıkar" Margin="0,0,0,16"/>
                                     <Button x:Name="BtnExtractImageAction" Content="Görselleri Klasöre Çıkar" Style="{StaticResource ModernButtonStyle}" Click="BtnExtractImageAction_Click" IsEnabled="False"/>
                                 </StackPanel>
                             </Border>
