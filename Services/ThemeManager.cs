@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 
 namespace PdfTool.Services
@@ -37,7 +38,13 @@ namespace PdfTool.Services
             var uri = new Uri(IsDarkTheme ? "Themes/DarkTheme.xaml" : "Themes/LightTheme.xaml", UriKind.Relative);
             
             var dict = new ResourceDictionary() { Source = uri };
-            app.Resources.MergedDictionaries.Clear();
+            
+            var existingDict = app.Resources.MergedDictionaries.FirstOrDefault(d => d.Source != null && d.Source.OriginalString.StartsWith("Themes/"));
+            if (existingDict != null)
+            {
+                app.Resources.MergedDictionaries.Remove(existingDict);
+            }
+            
             app.Resources.MergedDictionaries.Add(dict);
         }
     }

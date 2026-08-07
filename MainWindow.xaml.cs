@@ -115,6 +115,11 @@ namespace PdfTool
             PdfTool.Services.ThemeManager.ToggleTheme();
         }
 
+        private void BtnToggleLanguage_Click(object sender, RoutedEventArgs e)
+        {
+            PdfTool.Services.LanguageManager.ToggleLanguage();
+        }
+
         #region Toast Notification System
 
         private void ShowToast(string message, bool isSuccess = true)

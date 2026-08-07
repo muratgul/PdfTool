@@ -9,8 +9,8 @@
         <!-- Empty State -->
         <StackPanel x:Name="PanelEmpty" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,20,0,20">
             <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{DynamicResource BorderDark}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
-            <Button Content="PDF Seçin" Style="{DynamicResource ModernButtonStyle}" Click="BtnSelect_Click" HorizontalAlignment="Center"/>
-            <TextBlock Text="veya dosyayı buraya sürükleyin" Foreground="{DynamicResource TextGray}" FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center"/>
+            <Button Content="{DynamicResource Str_41}" Style="{DynamicResource ModernButtonStyle}" Click="BtnSelect_Click" HorizontalAlignment="Center"/>
+            <TextBlock Text="{DynamicResource Str_0}" Foreground="{DynamicResource TextGray}" FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center"/>
         </StackPanel>
 
         <!-- Loaded State -->
@@ -33,11 +33,11 @@
                 <!-- Info -->
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="5,0,0,0">
                     <TextBlock x:Name="TxtFileName" Text="Dosya" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource TextDark}" TextTrimming="CharacterEllipsis"/>
-                    <TextBlock x:Name="TxtFileInfo" Text="Bilgi" FontSize="13" Foreground="{DynamicResource TextLight}" Margin="0,4,0,0"/>
+                    <TextBlock x:Name="TxtFileInfo" Text="{DynamicResource Str_170}" FontSize="13" Foreground="{DynamicResource TextLight}" Margin="0,4,0,0"/>
                 </StackPanel>
 
                 <!-- Change Button -->
-                <Button Grid.Column="2" Content="Değiştir" Style="{DynamicResource SecondaryButtonStyle}" Click="BtnSelect_Click" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                <Button Grid.Column="2" Content="{DynamicResource Str_169}" Style="{DynamicResource SecondaryButtonStyle}" Click="BtnSelect_Click" VerticalAlignment="Center" Margin="10,0,0,0"/>
             </Grid>
         </Border>
     </Grid>
