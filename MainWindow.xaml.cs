@@ -45,9 +45,12 @@ namespace PdfTool
         private int _rotatePreviewPageIndex = 0;
         private int _deletePreviewPageIndex = 0;
         private int _splitPreviewPageIndex = 0;
+        private int _watermarkPreviewPageIndex = 0;
+        private double _watermarkCurrentZoom = 1.0;
 
         // Path for watermark image
         private string? _watermarkImagePath;
+        private Color _watermarkColor = Color.FromRgb(239, 68, 68); // #EF4444 default
 
         // Toast Notification Timer
         private DispatcherTimer? _toastTimer;
@@ -72,6 +75,25 @@ namespace PdfTool
 
             UpdateMergeStatus();
             UpdateToPdfStatus();
+
+            // Watermark Preview Events
+            TxtWatermarkText.TextChanged += (s, e) => UpdateWatermarkLivePreview();
+            SliderWTextFontSize.ValueChanged += (s, e) => UpdateWatermarkLivePreview();
+            SliderWImageScale.ValueChanged += (s, e) => UpdateWatermarkLivePreview();
+            CmbWatermarkPosition.SelectionChanged += (s, e) => UpdateWatermarkLivePreview();
+            SliderWatermarkOpacity.ValueChanged += (s, e) => UpdateWatermarkLivePreview();
+            SliderWatermarkAngle.ValueChanged += (s, e) => UpdateWatermarkLivePreview();
+            
+            // Populate System Fonts
+            foreach (var fontFamily in System.Windows.Media.Fonts.SystemFontFamilies)
+            {
+                CmbWatermarkFont.Items.Add(fontFamily.Source);
+                CmbPageNumberFont.Items.Add(fontFamily.Source);
+            }
+            if (CmbWatermarkFont.Items.Count > 0) CmbWatermarkFont.SelectedItem = "Arial";
+            if (CmbPageNumberFont.Items.Count > 0) CmbPageNumberFont.SelectedItem = "Arial";
+
+            CmbWatermarkFont.SelectionChanged += (s, e) => UpdateWatermarkLivePreview();
         }
 
         #region Navigation and UI Styling Helpers
@@ -267,11 +289,15 @@ namespace PdfTool
 
             // Populate Watermark panel
             _loadedWatermarkFile = filePath;
+            long watermarkFileBytes = new FileInfo(filePath).Length;
+            string watermarkSizeStr = watermarkFileBytes > 1048576 ? (watermarkFileBytes / 1048576.0).ToString("0.00") + " MB" : (watermarkFileBytes / 1024.0).ToString("0") + " KB";
             TxtWatermarkFileName.Text = fileName;
-            TxtWatermarkFilePages.Text = $"Sayfa Sayısı: {pageCount}";
+            TxtWatermarkFilePages.Text = $"{pageCount} Sayfa • {watermarkSizeStr}";
             PanelWatermarkNoFile.Visibility = Visibility.Collapsed;
             PanelWatermarkFileLoaded.Visibility = Visibility.Visible;
             BtnWatermarkAction.IsEnabled = true;
+            _watermarkPreviewPageIndex = 0;
+            UpdateWatermarkPreview();
 
             // Populate ToImage panel
             _loadedToImageFile = filePath;
@@ -580,6 +606,7 @@ namespace PdfTool
                 PanelTextWatermarkSettings.Visibility = Visibility.Collapsed;
                 PanelImageWatermarkSettings.Visibility = Visibility.Visible;
             }
+            UpdateWatermarkLivePreview();
         }
 
         private void BtnSelectWatermarkImage_Click(object sender, RoutedEventArgs e)
@@ -594,6 +621,20 @@ namespace PdfTool
             {
                 _watermarkImagePath = dialog.FileName;
                 TxtWatermarkImagePath.Text = Path.GetFileName(dialog.FileName);
+                UpdateWatermarkLivePreview();
+            }
+        }
+
+        private void BtnSelectWatermarkColor_Click(object sender, RoutedEventArgs e)
+        {
+            var colorDialog = new System.Windows.Forms.ColorDialog();
+            colorDialog.Color = System.Drawing.Color.FromArgb(_watermarkColor.A, _watermarkColor.R, _watermarkColor.G, _watermarkColor.B);
+            
+            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                _watermarkColor = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+                BorderWatermarkColorPreview.Background = new SolidColorBrush(_watermarkColor);
+                UpdateWatermarkLivePreview();
             }
         }
 
@@ -625,13 +666,7 @@ namespace PdfTool
                     }
 
                     double fontSize = SliderWTextFontSize.Value;
-                    Color color = Colors.Red;
-
-                    if (CmbWatermarkColor.SelectedItem is ComboBoxItem item && item.Tag is string tag)
-                    {
-                        var convertedColor = ColorConverter.ConvertFromString(tag);
-                        if (convertedColor is Color c) color = c;
-                    }
+                    string fontName = CmbWatermarkFont.SelectedItem as string ?? "Arial";
 
                     PdfService.AddTextWatermark(
                         _loadedWatermarkFile,
@@ -640,8 +675,8 @@ namespace PdfTool
                         opacity,
                         rotation,
                         fontSize,
-                        color,
-                        "Arial"
+                        _watermarkColor,
+                        fontName
                     );
                 }
                 else
@@ -677,6 +712,173 @@ namespace PdfTool
             catch (Exception ex)
             {
                 ShowToast($"Hata oluştu: {ex.Message}", false);
+            }
+        }
+
+        private async void UpdateWatermarkPreview()
+        {
+            if (string.IsNullOrEmpty(_loadedWatermarkFile)) return;
+            int pageCount = PdfService.GetPdfPageCount(_loadedWatermarkFile);
+            TxtWatermarkPageInfo.Text = $"{_watermarkPreviewPageIndex + 1} / {pageCount}";
+            BtnWatermarkPrevPage.IsEnabled = _watermarkPreviewPageIndex > 0;
+            BtnWatermarkNextPage.IsEnabled = _watermarkPreviewPageIndex < pageCount - 1;
+
+            await RenderWatermarkPreviewPage();
+            UpdateWatermarkLivePreview();
+        }
+
+        private async System.Threading.Tasks.Task RenderWatermarkPreviewPage()
+        {
+            if (string.IsNullOrEmpty(_loadedWatermarkFile)) return;
+
+            try
+            {
+                string path = _loadedWatermarkFile;
+                int idx = _watermarkPreviewPageIndex;
+
+                var (bgraBytes, width, height) = await System.Threading.Tasks.Task.Run(() =>
+                {
+                    return GetPdfPageData(path, idx);
+                });
+
+                if (bgraBytes == null) return;
+
+                var wb = new System.Windows.Media.Imaging.WriteableBitmap(width, height, 96, 96, PixelFormats.Bgra32, null);
+                wb.WritePixels(new Int32Rect(0, 0, width, height), bgraBytes, width * 4, 0);
+
+                ImgWatermarkPdfPreview.Source = wb;
+                ImgWatermarkPdfPreview.Width = width;
+                ImgWatermarkPdfPreview.Height = height;
+
+                Action autofit = () =>
+                {
+                    if (WatermarkScrollViewer.ActualWidth > 0 && WatermarkScrollViewer.ActualHeight > 0)
+                    {
+                        double fitScaleX = (WatermarkScrollViewer.ActualWidth - 40) / (double)width;
+                        double fitScaleY = (WatermarkScrollViewer.ActualHeight - 40) / (double)height;
+                        double fitScale = Math.Min(fitScaleX, fitScaleY);
+                        if (fitScale > 2) fitScale = 2; // don't zoom in too much initially
+                        if (fitScale <= 0) fitScale = 1;
+                        _watermarkCurrentZoom = fitScale;
+                        ApplyWatermarkZoom();
+                    }
+                };
+
+                if (WatermarkScrollViewer.ActualWidth > 0) autofit();
+                else Dispatcher.InvokeAsync(autofit, System.Windows.Threading.DispatcherPriority.Loaded);
+            }
+            catch { }
+        }
+
+        private void UpdateWatermarkLivePreview()
+        {
+            if (TxtWatermarkLive == null || ImgWatermarkLive == null) return;
+
+            // Opacity
+            double opacity = (SliderWatermarkOpacity?.Value ?? 0.3);
+            TxtWatermarkLive.Opacity = opacity;
+            ImgWatermarkLive.Opacity = opacity;
+
+            var overlayGrid = (Grid)TxtWatermarkLive.Parent;
+
+            if (RadioTextWatermark?.IsChecked == true)
+            {
+                TxtWatermarkLive.Visibility = Visibility.Visible;
+                ImgWatermarkLive.Visibility = Visibility.Collapsed;
+                
+                TxtWatermarkLive.Text = TxtWatermarkText?.Text ?? "";
+                TxtWatermarkLive.FontSize = SliderWTextFontSize?.Value ?? 60;
+                TxtWatermarkLive.Foreground = new SolidColorBrush(_watermarkColor);
+                
+                string fontName = CmbWatermarkFont?.SelectedItem as string ?? "Arial";
+                TxtWatermarkLive.FontFamily = new System.Windows.Media.FontFamily(fontName);
+                
+                // Text is always centered and rotated
+                overlayGrid.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+                overlayGrid.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+                WatermarkPreviewRotation.Angle = SliderWatermarkAngle?.Value ?? -45;
+                WatermarkPreviewScale.ScaleX = 1;
+                WatermarkPreviewScale.ScaleY = 1;
+            }
+            else
+            {
+                TxtWatermarkLive.Visibility = Visibility.Collapsed;
+                ImgWatermarkLive.Visibility = Visibility.Visible;
+                
+                if (!string.IsNullOrEmpty(_watermarkImagePath) && File.Exists(_watermarkImagePath))
+                {
+                    try
+                    {
+                        var bmp = new System.Windows.Media.Imaging.BitmapImage(new Uri(_watermarkImagePath));
+                        ImgWatermarkLive.Source = bmp;
+                    }
+                    catch { }
+                }
+
+                double scale = (SliderWImageScale?.Value ?? 50) / 100.0;
+                WatermarkPreviewScale.ScaleX = scale;
+                WatermarkPreviewScale.ScaleY = scale;
+                WatermarkPreviewRotation.Angle = SliderWatermarkAngle?.Value ?? 0;
+
+                string posTag = "Center";
+                if (CmbWatermarkPosition?.SelectedItem is ComboBoxItem posItem && posItem.Tag is string t) posTag = t;
+                
+                switch (posTag)
+                {
+                    case "TopLeft": overlayGrid.HorizontalAlignment = System.Windows.HorizontalAlignment.Left; overlayGrid.VerticalAlignment = System.Windows.VerticalAlignment.Top; break;
+                    case "TopRight": overlayGrid.HorizontalAlignment = System.Windows.HorizontalAlignment.Right; overlayGrid.VerticalAlignment = System.Windows.VerticalAlignment.Top; break;
+                    case "BottomLeft": overlayGrid.HorizontalAlignment = System.Windows.HorizontalAlignment.Left; overlayGrid.VerticalAlignment = System.Windows.VerticalAlignment.Bottom; break;
+                    case "BottomRight": overlayGrid.HorizontalAlignment = System.Windows.HorizontalAlignment.Right; overlayGrid.VerticalAlignment = System.Windows.VerticalAlignment.Bottom; break;
+                    default: overlayGrid.HorizontalAlignment = System.Windows.HorizontalAlignment.Center; overlayGrid.VerticalAlignment = System.Windows.VerticalAlignment.Center; break;
+                }
+            }
+        }
+
+        private void BtnWatermarkPrevPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (_watermarkPreviewPageIndex > 0)
+            {
+                _watermarkPreviewPageIndex--;
+                UpdateWatermarkPreview();
+            }
+        }
+
+        private void BtnWatermarkNextPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(_loadedWatermarkFile)) return;
+            int pageCount = PdfService.GetPdfPageCount(_loadedWatermarkFile);
+            if (_watermarkPreviewPageIndex < pageCount - 1)
+            {
+                _watermarkPreviewPageIndex++;
+                UpdateWatermarkPreview();
+            }
+        }
+
+        private void BtnWatermarkZoomIn_Click(object sender, RoutedEventArgs e)
+        {
+            _watermarkCurrentZoom += 0.2;
+            ApplyWatermarkZoom();
+        }
+
+        private void BtnWatermarkZoomOut_Click(object sender, RoutedEventArgs e)
+        {
+            if (_watermarkCurrentZoom > 0.3)
+            {
+                _watermarkCurrentZoom -= 0.2;
+                ApplyWatermarkZoom();
+            }
+        }
+
+        private void ApplyWatermarkZoom()
+        {
+            if (WatermarkZoomTransform != null)
+            {
+                WatermarkZoomTransform.ScaleX = _watermarkCurrentZoom;
+                WatermarkZoomTransform.ScaleY = _watermarkCurrentZoom;
+            }
+            if (TxtWatermarkZoom != null)
+            {
+                TxtWatermarkZoom.Text = $"{(_watermarkCurrentZoom * 100):0}%";
             }
         }
 
@@ -1104,6 +1306,19 @@ namespace PdfTool
             }
         }
 
+        private void WatermarkDrop(object sender, System.Windows.DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
+            {
+                string[]? files = (string[]?)e.Data.GetData(System.Windows.DataFormats.FileDrop);
+                if (files != null && files.Length > 0 && Path.GetExtension(files[0]).ToLower() == ".pdf")
+                {
+                    LoadSinglePdfFile(files[0]);
+                    ShowToast("PDF dosyası başarıyla yüklendi.");
+                }
+            }
+        }
+
         private void RotateDrop(object sender, System.Windows.DragEventArgs e)
         {
             if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
@@ -1517,12 +1732,177 @@ namespace PdfTool
                     LoadPageNumberFile(files[0]);
             }
         }
-        private void LoadPageNumberFile(string path)
+        private int _previewPageIndex = 0;
+        private int _previewTotalPages = 0;
+
+        private async void LoadPageNumberFile(string path)
         {
             _loadedPageNumberFile = path;
-            PreviewPageNumberFile.LoadFile(path);
             BtnPageNumberAction.IsEnabled = true;
+
+            try
+            {
+                _previewTotalPages = PdfTool.Services.PdfService.GetPdfPageCount(path);
+                _previewPageIndex = 0;
+                
+                long fileBytes = new System.IO.FileInfo(path).Length;
+                string sizeStr = fileBytes > 1048576 ? (fileBytes / 1048576.0).ToString("0.00") + " MB" : (fileBytes / 1024.0).ToString("0") + " KB";
+                TxtPageNumberFileName.Text = System.IO.Path.GetFileName(path);
+                TxtPageNumberFilePages.Text = $"{_previewTotalPages} Sayfa • {sizeStr}";
+
+                UpdatePaginationControls();
+                await RenderPreviewPage();
+            }
+            catch { }
         }
+
+        private void UpdatePaginationControls()
+        {
+            TxtPreviewPageInfo.Text = $"{_previewPageIndex + 1} / {_previewTotalPages}";
+            BtnPrevPreviewPage.IsEnabled = _previewPageIndex > 0;
+            BtnNextPreviewPage.IsEnabled = _previewPageIndex < _previewTotalPages - 1;
+        }
+
+        private async Task RenderPreviewPage()
+        {
+            if (string.IsNullOrEmpty(_loadedPageNumberFile)) return;
+
+            UpdatePageNumberPreview();
+
+            var docData = await Task.Run(() => GetPdfPageData(_loadedPageNumberFile, _previewPageIndex));
+            if (docData != null && docData.Item1 != null)
+            {
+                var rawBytes = docData.Item1;
+                int width = docData.Item2;
+                int height = docData.Item3;
+
+                var bitmap = new System.Windows.Media.Imaging.WriteableBitmap(width, height, 96, 96, System.Windows.Media.PixelFormats.Bgra32, null);
+                bitmap.WritePixels(new System.Windows.Int32Rect(0, 0, width, height), rawBytes, width * 4, 0);
+                bitmap.Freeze();
+
+                ImgPageNumberPreview.Source = bitmap;
+                PageNumberPreviewGrid.Width = width;
+                PageNumberPreviewGrid.Height = height;
+
+                PreviewPageNumberFile.Visibility = Visibility.Collapsed;
+                PageNumberPreviewContainer.Visibility = Visibility.Visible;
+            }
+        }
+
+        private async void BtnPrevPreviewPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (_previewPageIndex > 0)
+            {
+                _previewPageIndex--;
+                UpdatePaginationControls();
+                await RenderPreviewPage();
+            }
+        }
+
+        private async void BtnNextPreviewPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (_previewPageIndex < _previewTotalPages - 1)
+            {
+                _previewPageIndex++;
+                UpdatePaginationControls();
+                await RenderPreviewPage();
+            }
+        }
+
+        private Tuple<byte[], int, int> GetPdfPageData(string filePath, int pageIndex)
+        {
+            try
+            {
+                using (var docReader = DocLib.Instance.GetDocReader(filePath, new PageDimensions(1.0)))
+                {
+                    using (var pageReader = docReader.GetPageReader(pageIndex))
+                    {
+                        var rawBytes = pageReader.GetImage();
+                        int width = pageReader.GetPageWidth();
+                        int height = pageReader.GetPageHeight();
+
+                        return Tuple.Create(rawBytes, width, height);
+                    }
+                }
+            }
+            catch
+            {
+                return Tuple.Create((byte[])null, 0, 0);
+            }
+        }
+
+        private void PageNumberSetting_Changed(object sender, RoutedEventArgs e)
+        {
+            UpdatePageNumberPreview();
+        }
+
+        private void UpdatePageNumberPreview()
+        {
+            if (TxtPageNumberLive == null || string.IsNullOrEmpty(_loadedPageNumberFile)) return;
+
+            try
+            {
+                int pages = _previewTotalPages > 0 ? _previewTotalPages : PdfTool.Services.PdfService.GetPdfPageCount(_loadedPageNumberFile);
+                string formatText = TxtPageNumberFormat?.Text ?? "Sayfa {0} / {1}";
+                formatText = formatText.Replace("{0}", (_previewPageIndex + 1).ToString()).Replace("{1}", pages.ToString());
+                TxtPageNumberLive.Text = formatText;
+
+                if (CmbPageNumberFont?.SelectedItem is string fontName)
+                {
+                    TxtPageNumberLive.FontFamily = new System.Windows.Media.FontFamily(fontName);
+                }
+
+                if (SldPageNumberSize != null)
+                {
+                    TxtPageNumberLive.FontSize = SldPageNumberSize.Value;
+                }
+
+                if (SldPageNumberMarginX != null && SldPageNumberMarginY != null)
+                {
+                    double marginX = SldPageNumberMarginX.Value;
+                    double marginY = SldPageNumberMarginY.Value;
+                    
+                    if (PosBL?.IsChecked == true)
+                    {
+                        TxtPageNumberLive.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+                        TxtPageNumberLive.VerticalAlignment = System.Windows.VerticalAlignment.Bottom;
+                        TxtPageNumberLive.Margin = new Thickness(marginX, 0, 0, marginY);
+                    }
+                    else if (PosBC?.IsChecked == true)
+                    {
+                        TxtPageNumberLive.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+                        TxtPageNumberLive.VerticalAlignment = System.Windows.VerticalAlignment.Bottom;
+                        TxtPageNumberLive.Margin = new Thickness(0, 0, 0, marginY);
+                    }
+                    else if (PosBR?.IsChecked == true)
+                    {
+                        TxtPageNumberLive.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
+                        TxtPageNumberLive.VerticalAlignment = System.Windows.VerticalAlignment.Bottom;
+                        TxtPageNumberLive.Margin = new Thickness(0, 0, marginX, marginY);
+                    }
+                    else if (PosTL?.IsChecked == true)
+                    {
+                        TxtPageNumberLive.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+                        TxtPageNumberLive.VerticalAlignment = System.Windows.VerticalAlignment.Top;
+                        TxtPageNumberLive.Margin = new Thickness(marginX, marginY, 0, 0);
+                    }
+                    else if (PosTC?.IsChecked == true)
+                    {
+                        TxtPageNumberLive.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+                        TxtPageNumberLive.VerticalAlignment = System.Windows.VerticalAlignment.Top;
+                        TxtPageNumberLive.Margin = new Thickness(0, marginY, 0, 0);
+                    }
+                    else if (PosTR?.IsChecked == true)
+                    {
+                        TxtPageNumberLive.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
+                        TxtPageNumberLive.VerticalAlignment = System.Windows.VerticalAlignment.Top;
+                        TxtPageNumberLive.Margin = new Thickness(0, marginY, marginX, 0);
+                    }
+                }
+            }
+            catch { }
+        }
+
         private void BtnPageNumberAction_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new SaveFileDialog { Filter = "PDF (*.pdf)|*.pdf", FileName = Path.GetFileNameWithoutExtension(_loadedPageNumberFile) + "_numarali.pdf" };
@@ -1537,11 +1917,12 @@ namespace PdfTool
                     if (PosTC.IsChecked == true) position = 4;
                     if (PosTR.IsChecked == true) position = 5;
 
-                    int margin = (int)SldPageNumberMargin.Value;
-                    string fontName = ((ComboBoxItem)CmbPageNumberFont.SelectedItem).Content.ToString();
+                    int marginX = (int)SldPageNumberMarginX.Value;
+                    int marginY = (int)SldPageNumberMarginY.Value;
+                    string fontName = CmbPageNumberFont.SelectedItem as string ?? "Arial";
                     int fontSize = (int)SldPageNumberSize.Value;
                     
-                    PdfTool.Services.PdfServiceExtensions.AddPageNumbers(_loadedPageNumberFile, dlg.FileName, TxtPageNumberFormat.Text, position, fontSize, margin, fontName);
+                    PdfTool.Services.PdfServiceExtensions.AddPageNumbers(_loadedPageNumberFile, dlg.FileName, TxtPageNumberFormat.Text, position, fontSize, marginX, marginY, fontName);
                     ShowToast("PDF sayfa numaraları başarıyla eklendi.");
                     System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(dlg.FileName) { UseShellExecute = true });
                 } catch (Exception ex) { ShowToast($"Hata: {ex.Message}", false); }

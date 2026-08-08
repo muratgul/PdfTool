@@ -45,10 +45,21 @@ namespace PdfTool.Controls
             int pages = PdfService.GetPdfPageCount(filePath);
             TxtFileInfo.Text = $"{pages} Sayfa • {sizeStr}";
 
-            var bmp = await Task.Run(() => GenerateThumbnail(filePath));
-            if (bmp != null)
+            var docData = await Task.Run(() => GetThumbnailData(filePath));
+            if (docData != null && docData.Item1 != null)
             {
-                ImgThumbnail.Source = bmp;
+                var rawBytes = docData.Item1;
+                int width = docData.Item2;
+                int height = docData.Item3;
+
+                var bitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgra32, null);
+                bitmap.WritePixels(new Int32Rect(0, 0, width, height), rawBytes, width * 4, 0);
+                
+                double scale = 100.0 / Math.Max(width, height);
+                var scaledBitmap = new TransformedBitmap(bitmap, new ScaleTransform(scale, scale));
+                scaledBitmap.Freeze();
+
+                ImgThumbnail.Source = scaledBitmap;
                 ImgThumbnail.Visibility = Visibility.Visible;
                 IconFallback.Visibility = Visibility.Hidden;
             }
@@ -59,11 +70,11 @@ namespace PdfTool.Controls
             }
         }
 
-        private BitmapSource GenerateThumbnail(string filePath)
+        private Tuple<byte[], int, int> GetThumbnailData(string filePath)
         {
             try
             {
-                using (var docReader = DocLib.Instance.GetDocReader(filePath, new PageDimensions()))
+                using (var docReader = DocLib.Instance.GetDocReader(filePath, new PageDimensions(1.0)))
                 {
                     using (var pageReader = docReader.GetPageReader(0))
                     {
@@ -71,19 +82,13 @@ namespace PdfTool.Controls
                         int width = pageReader.GetPageWidth();
                         int height = pageReader.GetPageHeight();
 
-                        var bitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgra32, null);
-                        bitmap.WritePixels(new Int32Rect(0, 0, width, height), rawBytes, width * 4, 0);
-                        
-                        double scale = 100.0 / Math.Max(width, height);
-                        var scaledBitmap = new TransformedBitmap(bitmap, new ScaleTransform(scale, scale));
-                        scaledBitmap.Freeze();
-                        return scaledBitmap;
+                        return Tuple.Create(rawBytes, width, height);
                     }
                 }
             }
             catch
             {
-                return null;
+                return Tuple.Create((byte[])null, 0, 0);
             }
         }
     }

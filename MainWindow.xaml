@@ -824,7 +824,7 @@
                             </Grid.ColumnDefinitions>
 
                             <!-- Left: File drop area or loaded preview info -->
-                            <Border Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Margin="0,0,16,0" Padding="20">
+                            <Border Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="WatermarkDrop">
                                 <Grid>
                                     <StackPanel x:Name="PanelWatermarkNoFile" VerticalAlignment="Center" HorizontalAlignment="Center">
                                         <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{DynamicResource BorderDark}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
@@ -832,12 +832,62 @@
                                         <TextBlock Text="{DynamicResource Str_0}" Foreground="{DynamicResource TextGray}" FontSize="12" Margin="0,8,0,0" HorizontalAlignment="Center"/>
                                     </StackPanel>
 
-                                    <StackPanel x:Name="PanelWatermarkFileLoaded" Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Path Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" Fill="{DynamicResource PrimaryBrush}" Width="60" Height="60" Stretch="Uniform" Margin="0,0,0,12" HorizontalAlignment="Center"/>
-                                        <TextBlock x:Name="TxtWatermarkFileName" Text="{DynamicResource Str_93}" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="300"/>
-                                        <TextBlock x:Name="TxtWatermarkFilePages" Text="{DynamicResource Str_3}" Foreground="{DynamicResource TextGray}" FontSize="13" Margin="0,4,0,12" HorizontalAlignment="Center"/>
-                                        <Button Content="{DynamicResource Str_40}" Style="{StaticResource SecondaryButtonStyle}" Click="BtnSelectWatermarkFile_Click" HorizontalAlignment="Center"/>
-                                    </StackPanel>
+                                    <Grid x:Name="PanelWatermarkFileLoaded" Visibility="Collapsed" ClipToBounds="True">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- PDF Page Preview with Watermark Live Preview -->
+                                        <Border x:Name="WatermarkPreviewBorder" Grid.Row="0" Background="#E5E7EB" BorderBrush="{DynamicResource BorderDark}" BorderThickness="1" CornerRadius="4" Margin="0,0,0,12" ClipToBounds="True">
+                                            <ScrollViewer x:Name="WatermarkScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="0" Padding="10">
+                                                <Grid x:Name="WatermarkPreviewGrid" HorizontalAlignment="Center" VerticalAlignment="Center" ClipToBounds="True">
+                                                    <Grid.LayoutTransform>
+                                                        <ScaleTransform x:Name="WatermarkZoomTransform" ScaleX="1" ScaleY="1"/>
+                                                    </Grid.LayoutTransform>
+                                                    <Border Background="White">
+                                                        <Border.Effect>
+                                                            <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.3" ShadowDepth="0"/>
+                                                        </Border.Effect>
+                                                    </Border>
+                                                    <Image x:Name="ImgWatermarkPdfPreview" Stretch="None"/>
+                                                    
+                                                    <!-- Overlays for Watermark -->
+                                                    <Canvas>
+                                                        <Grid Width="{Binding ElementName=ImgWatermarkPdfPreview, Path=ActualWidth}" Height="{Binding ElementName=ImgWatermarkPdfPreview, Path=ActualHeight}">
+                                                            <Grid x:Name="WatermarkOverlay" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                                                                <Grid.RenderTransform>
+                                                                    <TransformGroup>
+                                                                        <ScaleTransform x:Name="WatermarkPreviewScale" ScaleX="1" ScaleY="1"/>
+                                                                        <RotateTransform x:Name="WatermarkPreviewRotation" Angle="-45"/>
+                                                                    </TransformGroup>
+                                                                </Grid.RenderTransform>
+                                                                <TextBlock x:Name="TxtWatermarkLive" Text="MEGPdf" Foreground="Red" FontSize="60" FontFamily="Arial" Opacity="0.5" Visibility="Visible" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"/>
+                                                                <Image x:Name="ImgWatermarkLive" Stretch="Uniform" Opacity="0.5" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            </Grid>
+                                                        </Grid>
+                                                    </Canvas>
+                                                </Grid>
+                                            </ScrollViewer>
+                                        </Border>
+
+                                        <!-- Info and Navigation stacked below -->
+                                        <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,8">
+                                                <Button x:Name="BtnWatermarkZoomOut" Content="➖" Style="{StaticResource SecondaryButtonStyle}" Padding="6,2" Margin="0,0,5,0" Click="BtnWatermarkZoomOut_Click"/>
+                                                <TextBlock x:Name="TxtWatermarkZoom" Text="100%" VerticalAlignment="Center" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextGray}" Margin="0,0,5,0" Width="45" TextAlignment="Center"/>
+                                                <Button x:Name="BtnWatermarkZoomIn" Content="➕" Style="{StaticResource SecondaryButtonStyle}" Padding="6,2" Margin="0,0,20,0" Click="BtnWatermarkZoomIn_Click"/>
+
+                                                <Button x:Name="BtnWatermarkPrevPage" Content="◀" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" Margin="0,0,10,0" Click="BtnWatermarkPrevPage_Click"/>
+                                                <TextBlock x:Name="TxtWatermarkPageInfo" Text="{DynamicResource Str_154}" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextLight}"/>
+                                                <Button x:Name="BtnWatermarkNextPage" Content="▶" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" Margin="10,0,0,0" Click="BtnWatermarkNextPage_Click"/>
+                                            </StackPanel>
+
+                                            <TextBlock x:Name="TxtWatermarkFileName" Text="{DynamicResource Str_93}" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="280" Margin="0,0,0,2"/>
+                                            <TextBlock x:Name="TxtWatermarkFilePages" Text="{DynamicResource Str_3}" Foreground="{DynamicResource TextGray}" FontSize="11" Margin="0,0,0,8" HorizontalAlignment="Center"/>
+                                            <Button Content="{DynamicResource Str_40}" Style="{StaticResource SecondaryButtonStyle}" Padding="8,4" FontSize="11" Click="BtnSelectWatermarkFile_Click" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Grid>
                                 </Grid>
                             </Border>
 
@@ -864,7 +914,7 @@
                                             <!-- Metin Filigranı Ayarları -->
                                             <StackPanel x:Name="PanelTextWatermarkSettings" Visibility="Visible">
                                                 <TextBlock Foreground="{DynamicResource TextLight}" Text="{DynamicResource Str_11}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                                                <TextBox x:Name="TxtWatermarkText" Style="{StaticResource ModernTextBoxStyle}" Text="{DynamicResource Str_52}" Margin="0,0,0,12"/>
+                                                <TextBox x:Name="TxtWatermarkText" Style="{StaticResource ModernTextBoxStyle}" Text="MEGPdf" Margin="0,0,0,12"/>
 
                                                 <TextBlock Foreground="{DynamicResource TextLight}" Text="{DynamicResource Str_80}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
                                                 <Grid Margin="0,0,0,12">
@@ -876,14 +926,24 @@
                                                     <TextBlock Grid.Column="1" Text="{Binding ElementName=SliderWTextFontSize, Path=Value}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="12" Foreground="{DynamicResource TextLight}"/>
                                                 </Grid>
 
-                                                <TextBlock Foreground="{DynamicResource TextLight}" Text="{DynamicResource Str_130}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                                                <ComboBox x:Name="CmbWatermarkColor" SelectedIndex="0" Margin="0,0,0,12">
-                                                    <ComboBoxItem Content="{DynamicResource Str_45}" Tag="#EF4444"/>
-                                                    <ComboBoxItem Content="{DynamicResource Str_133}" Tag="#000000"/>
-                                                    <ComboBoxItem Content="{DynamicResource Str_36}" Tag="#4B5563"/>
-                                                    <ComboBoxItem Content="{DynamicResource Str_102}" Tag="#3B82F6"/>
-                                                    <ComboBoxItem Content="{DynamicResource Str_46}" Tag="#0D9488"/>
+                                                <TextBlock Foreground="{DynamicResource TextLight}" Text="{DynamicResource Str_62}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                                <ComboBox x:Name="CmbWatermarkFont" Margin="0,0,0,12">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding}" FontFamily="{Binding}" FontSize="14" ToolTip="{Binding}"/>
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
                                                 </ComboBox>
+
+                                                <TextBlock Foreground="{DynamicResource TextLight}" Text="{DynamicResource Str_130}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                                <Grid Margin="0,0,0,12">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Border x:Name="BorderWatermarkColorPreview" Background="#EF4444" BorderBrush="{DynamicResource BorderDark}" BorderThickness="1" Margin="0,0,8,0" CornerRadius="4" Cursor="Hand" MouseLeftButtonDown="BtnSelectWatermarkColor_Click"/>
+                                                    <Button Grid.Column="1" Content="{DynamicResource Str_45}" Style="{StaticResource SecondaryButtonStyle}" Padding="10,6" Click="BtnSelectWatermarkColor_Click"/>
+                                                </Grid>
                                             </StackPanel>
 
                                             <!-- Görsel Filigranı Ayarları -->
@@ -1170,21 +1230,59 @@
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="320"/></Grid.ColumnDefinitions>
                             <Border Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Margin="0,0,16,0" Padding="20" AllowDrop="True" DragOver="SinglePdfDragOver" Drop="PageNumberDrop">
-                                <controls:FilePreviewControl x:Name="PreviewPageNumberFile" FileSelectRequested="BtnSelectPageNumberFile_Click"/>
+                                <Grid>
+                                    <controls:FilePreviewControl x:Name="PreviewPageNumberFile" FileSelectRequested="BtnSelectPageNumberFile_Click"/>
+                                    <Grid x:Name="PageNumberPreviewContainer" Visibility="Collapsed" ClipToBounds="True">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- PDF Page Preview -->
+                                        <Border Grid.Row="0" Background="#E5E7EB" BorderBrush="{DynamicResource BorderDark}" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,12">
+                                            <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Grid x:Name="PageNumberPreviewGrid">
+                                                    <Border Background="White">
+                                                        <Border.Effect>
+                                                            <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.3" ShadowDepth="0"/>
+                                                        </Border.Effect>
+                                                    </Border>
+                                                    <Image x:Name="ImgPageNumberPreview" Stretch="None"/>
+                                                    <TextBlock x:Name="TxtPageNumberLive" Text="Sayfa 1 / 1" Foreground="Black" 
+                                                               HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="20"
+                                                               FontSize="10" FontFamily="Arial"/>
+                                                </Grid>
+                                            </Viewbox>
+                                        </Border>
+
+                                        <!-- Info and Navigation stacked below -->
+                                        <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
+                                            <!-- Page Navigation Controls -->
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,8">
+                                                <Button x:Name="BtnPrevPreviewPage" Content="◀" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" Margin="0,0,10,0" Click="BtnPrevPreviewPage_Click"/>
+                                                <TextBlock x:Name="TxtPreviewPageInfo" Text="{DynamicResource Str_154}" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextLight}"/>
+                                                <Button x:Name="BtnNextPreviewPage" Content="▶" Style="{StaticResource SecondaryButtonStyle}" Padding="10,4" Margin="10,0,0,0" Click="BtnNextPreviewPage_Click"/>
+                                            </StackPanel>
+
+                                            <TextBlock x:Name="TxtPageNumberFileName" Text="{DynamicResource Str_93}" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource TextLight}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="280" Margin="0,0,0,2"/>
+                                            <TextBlock x:Name="TxtPageNumberFilePages" Text="{DynamicResource Str_3}" Foreground="{DynamicResource TextGray}" FontSize="11" Margin="0,0,0,8" HorizontalAlignment="Center"/>
+                                            <Button Content="{DynamicResource Str_40}" Style="{StaticResource SecondaryButtonStyle}" Padding="8,4" FontSize="11" Click="BtnSelectPageNumberFile_Click" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Grid>
                             </Border>
                             <Border Grid.Column="1" Background="{DynamicResource BackgroundCard}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDark}" Padding="20">
                                 <StackPanel>
                                     <TextBlock Foreground="{DynamicResource TextLight}" Text="{DynamicResource Str_90}" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                                    <TextBox x:Name="TxtPageNumberFormat" Style="{StaticResource ModernTextBoxStyle}" Text="Sayfa {0} / {1}" Margin="0,0,0,12"/>
+                                    <TextBox x:Name="TxtPageNumberFormat" Style="{StaticResource ModernTextBoxStyle}" Text="Sayfa {0} / {1}" Margin="0,0,0,12" TextChanged="PageNumberSetting_Changed"/>
                                     
                                     <TextBlock Foreground="{DynamicResource TextLight}" Text="{DynamicResource Str_62}" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                                    <ComboBox x:Name="CmbPageNumberFont" SelectedIndex="0" Margin="0,0,0,12">
-                                        <ComboBoxItem Content="{DynamicResource Str_155}"/>
-                                        <ComboBoxItem Content="{DynamicResource Str_14}"/>
-                                        <ComboBoxItem Content="{DynamicResource Str_104}"/>
-                                        <ComboBoxItem Content="{DynamicResource Str_148}"/>
-                                        <ComboBoxItem Content="{DynamicResource Str_31}"/>
-                                        <ComboBoxItem Content="{DynamicResource Str_8}"/>
+                                    <ComboBox x:Name="CmbPageNumberFont" Margin="0,0,0,12" SelectionChanged="PageNumberSetting_Changed">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding}" FontFamily="{Binding}" FontSize="14" ToolTip="{Binding}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
                                     </ComboBox>
                                     
                                     <TextBlock Foreground="{DynamicResource TextLight}" Text="{DynamicResource Str_64}" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
@@ -1198,22 +1296,33 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosTL" Grid.Row="0" Grid.Column="0" Content="↖" Style="{StaticResource PositionToggleStyle}"/>
-                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosTC" Grid.Row="0" Grid.Column="1" Content="↑" Style="{StaticResource PositionToggleStyle}"/>
-                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosTR" Grid.Row="0" Grid.Column="2" Content="↗" Style="{StaticResource PositionToggleStyle}"/>
-                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosBL" Grid.Row="1" Grid.Column="0" Content="↙" Style="{StaticResource PositionToggleStyle}"/>
-                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosBC" Grid.Row="1" Grid.Column="1" Content="↓" IsChecked="True" Style="{StaticResource PositionToggleStyle}"/>
-                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosBR" Grid.Row="1" Grid.Column="2" Content="↘" Style="{StaticResource PositionToggleStyle}"/>
+                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosTL" Grid.Row="0" Grid.Column="0" Content="↖" Style="{StaticResource PositionToggleStyle}" Checked="PageNumberSetting_Changed"/>
+                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosTC" Grid.Row="0" Grid.Column="1" Content="↑" Style="{StaticResource PositionToggleStyle}" Checked="PageNumberSetting_Changed"/>
+                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosTR" Grid.Row="0" Grid.Column="2" Content="↗" Style="{StaticResource PositionToggleStyle}" Checked="PageNumberSetting_Changed"/>
+                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosBL" Grid.Row="1" Grid.Column="0" Content="↙" Style="{StaticResource PositionToggleStyle}" Checked="PageNumberSetting_Changed"/>
+                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosBC" Grid.Row="1" Grid.Column="1" Content="↓" IsChecked="True" Style="{StaticResource PositionToggleStyle}" Checked="PageNumberSetting_Changed"/>
+                                        <RadioButton Foreground="{DynamicResource TextLight}" x:Name="PosBR" Grid.Row="1" Grid.Column="2" Content="↘" Style="{StaticResource PositionToggleStyle}" Checked="PageNumberSetting_Changed"/>
                                     </Grid>
                                     
                                     <TextBlock Foreground="{DynamicResource TextLight}" Text="{DynamicResource Str_127}" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
                                     <Grid Margin="0,0,0,12">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <Slider x:Name="SldPageNumberMargin" Minimum="0" Maximum="100" Value="20" TickFrequency="5" IsSnapToTickEnabled="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                        <TextBlock Foreground="{DynamicResource TextLight}" Grid.Column="1" Text="{Binding ElementName=SldPageNumberMargin, Path=Value}" VerticalAlignment="Center" Width="20" TextAlignment="Right"/>
+                                        
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="X:" Foreground="{DynamicResource TextGray}" VerticalAlignment="Center" Margin="0,0,8,6"/>
+                                        <Slider x:Name="SldPageNumberMarginX" Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="100" Value="20" TickFrequency="5" IsSnapToTickEnabled="True" VerticalAlignment="Center" Margin="0,0,10,6" ValueChanged="PageNumberSetting_Changed"/>
+                                        <TextBlock Foreground="{DynamicResource TextLight}" Grid.Row="0" Grid.Column="2" Text="{Binding ElementName=SldPageNumberMarginX, Path=Value}" VerticalAlignment="Center" Width="20" TextAlignment="Right" Margin="0,0,0,6"/>
+                                        
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Y:" Foreground="{DynamicResource TextGray}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <Slider x:Name="SldPageNumberMarginY" Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="100" Value="20" TickFrequency="5" IsSnapToTickEnabled="True" VerticalAlignment="Center" Margin="0,0,10,0" ValueChanged="PageNumberSetting_Changed"/>
+                                        <TextBlock Foreground="{DynamicResource TextLight}" Grid.Row="1" Grid.Column="2" Text="{Binding ElementName=SldPageNumberMarginY, Path=Value}" VerticalAlignment="Center" Width="20" TextAlignment="Right"/>
                                     </Grid>
                                     
                                     <TextBlock Foreground="{DynamicResource TextLight}" Text="{DynamicResource Str_50}" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
@@ -1222,7 +1331,7 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <Slider x:Name="SldPageNumberSize" Minimum="6" Maximum="48" Value="10" TickFrequency="1" IsSnapToTickEnabled="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                        <Slider x:Name="SldPageNumberSize" Minimum="6" Maximum="48" Value="10" TickFrequency="1" IsSnapToTickEnabled="True" VerticalAlignment="Center" Margin="0,0,10,0" ValueChanged="PageNumberSetting_Changed"/>
                                         <TextBlock Foreground="{DynamicResource TextLight}" Grid.Column="1" Text="{Binding ElementName=SldPageNumberSize, Path=Value}" VerticalAlignment="Center" Width="20" TextAlignment="Right"/>
                                     </Grid>
 

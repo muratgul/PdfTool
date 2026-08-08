@@ -129,7 +129,7 @@ namespace PdfTool.Services
         }
 
         // 3. Add Page Numbers
-        public static void AddPageNumbers(string sourceFile, string outputFile, string format = "Sayfa {0} / {1}", int position = 1, int fontSize = 10, int margin = 20, string fontFamily = "Arial")
+        public static void AddPageNumbers(string sourceFile, string outputFile, string format = "Sayfa {0} / {1}", int position = 1, int fontSize = 10, int marginX = 20, int marginY = 20, string fontFamily = "Arial")
         {
             using (PdfDocument document = PdfReader.Open(sourceFile, PdfDocumentOpenMode.Modify))
             {
@@ -159,13 +159,13 @@ namespace PdfTool.Services
                         // 3: Top Left, 4: Top Center, 5: Top Right
                         switch (position)
                         {
-                            case 0: x = margin; y = page.Height - margin; break;
-                            case 1: x = (page.Width - size.Width) / 2; y = page.Height - margin; break;
-                            case 2: x = page.Width - size.Width - margin; y = page.Height - margin; break;
-                            case 3: x = margin; y = margin + size.Height; break;
-                            case 4: x = (page.Width - size.Width) / 2; y = margin + size.Height; break;
-                            case 5: x = page.Width - size.Width - margin; y = margin + size.Height; break;
-                            default: x = (page.Width - size.Width) / 2; y = page.Height - margin; break;
+                            case 0: x = marginX; y = page.Height - marginY; break;
+                            case 1: x = (page.Width - size.Width) / 2; y = page.Height - marginY; break;
+                            case 2: x = page.Width - size.Width - marginX; y = page.Height - marginY; break;
+                            case 3: x = marginX; y = marginY + size.Height; break;
+                            case 4: x = (page.Width - size.Width) / 2; y = marginY + size.Height; break;
+                            case 5: x = page.Width - size.Width - marginX; y = marginY + size.Height; break;
+                            default: x = (page.Width - size.Width) / 2; y = page.Height - marginY; break;
                         }
 
                         gfx.DrawString(text, font, brush, new XPoint(x, y));
